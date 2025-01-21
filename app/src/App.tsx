@@ -1,25 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import React from "react";
+import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from "./routes/Home";
+import Products from "./routes/Products";
+import MealsHistory from "./routes/MealsHistory";
+import FutureMealsPlanner from "./routes/FutureMealsPlanner";
+import Calculator from "./routes/Calculator";
+import AdminBrowseRecipies from "./routes/AdminBrowseRecipies";
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/history" element={<MealsHistory />} />
+        <Route path="/planner" element={<FutureMealsPlanner />} />
+        <Route path="/calculator" element={<Calculator />} />
+        <Route path="/recipies/admin/:id" element={<AdminBrowseRecipies />} />
+        <Route path="/recipies/user/:id" element={<AdminBrowseRecipies />} />
+
+        <Route path="/calculator" element={<Calculator />} />
+      </Routes>
+    </Router>
   );
 }
 

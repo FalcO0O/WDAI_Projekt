@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/testing-library__react": "^10.2.0",
     "ajv": "^7.2.4"

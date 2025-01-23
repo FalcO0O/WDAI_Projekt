@@ -6,7 +6,7 @@ function HomePageContent() {
         <Box
             sx={{
                 width: { xs: "100%", md: "50%" }, // Responsywna szerokość
-                backgroundColor: "rgba(245, 245, 245, 0.9)", // Jasne tło z przezroczystością
+                backgroundColor: "primary.main", // Jasne tło z przezroczystością
                 padding: 4,
                 borderRadius: 2,
                 boxShadow: 3,

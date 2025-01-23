@@ -1,7 +1,6 @@
-// SectionOne.js
 import React from "react";
 import { Typography, Box } from "@mui/material";
-import backgroundImage from "../resources/home-background.png";
+import backgroundImage from "../resources/home-bg1.png";
 
 function SectionOne() {
     return (
@@ -10,7 +9,7 @@ function SectionOne() {
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                backgroundPosition: 'left',
                 width: '100%',
                 height: '100vh', // Pełna wysokość widoku
                 display: 'flex',
@@ -34,11 +33,12 @@ function SectionOne() {
                 }}
             >
                 <Typography variant="h4" gutterBottom>
-                    Twój osobisty kalkulator kalorii i planer posiłków!
+                    Kalkulator Kalorii!
                 </Typography>
                 <Typography variant="h6">
-                    Wygląd strony i jej treść do przegadania, myślę jeszcze czy nie zrobić scrollowalnego homepage
-                    (cóś takiego: <a href="https://www.youtube.com/watch?v=KAG5wNPdoTw" target="_blank" rel="noopener noreferrer" style={{ color: '#000', textDecoration: 'underline' }}>tutaj</a>)
+                    Sprawdź, ile kalorii spożywasz każdego dnia! Nasz kalkulator kalorii pozwala szybko obliczyć wartość energetyczną
+                    Twoich posiłków, pomagając w świadomym zarządzaniu dietą. Wystarczy wprowadzić składniki lub wybrać gotowe danie,
+                    a my zajmiemy się resztą!
                 </Typography>
             </Box>
         </Box>

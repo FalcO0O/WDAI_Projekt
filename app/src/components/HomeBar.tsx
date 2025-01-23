@@ -10,7 +10,7 @@ function HomeBar() {
     const navigate = useNavigate();
 
     return (
-        <AppBar position="static">
+        <AppBar position="fixed">
             <Toolbar
                 sx={{
                     display: "flex",

@@ -17,11 +17,13 @@ declare module "@mui/material/styles" {
   interface Palette {
     navBar: Palette["primary"];
     customGreen: Palette["primary"];
+    containerDate: Palette["primary"];
   }
 
   interface PaletteOptions {
     navBar?: PaletteOptions["primary"];
     customGreen?: PaletteOptions["primary"];
+    containerDate?: Palette["primary"];
   }
 }
 
@@ -38,7 +40,13 @@ const theme = createTheme({
     },
     navBar: {
       main: "#8aa251",
-    }
+    },
+    containerDate: {
+      main: "#8aa251",
+      light: "#adbd85",
+      dark: "#5b7d36",
+      contrastText: "#ffffff",
+    },
   },
 });
 

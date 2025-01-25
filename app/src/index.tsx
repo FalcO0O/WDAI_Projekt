@@ -31,10 +31,10 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: "#e3e3e3", // Customize your primary color
+      main: "#e3e3e3",
     },
     secondary: {
-      main: "#292525", // Customize your secondary color
+      main: "#292525",
     },
     navBar: {
       main: "#8aa251",
@@ -48,7 +48,4 @@ root.render(
   </ThemeProvider>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

@@ -10,7 +10,7 @@ function HomeBar() {
     const navigate = useNavigate();
 
     return (
-        <AppBar position="fixed">
+        <AppBar position="sticky">
             <Toolbar
                 sx={{
                     display: "flex",
@@ -29,8 +29,8 @@ function HomeBar() {
                 </Box>
 
                 <Box sx={{ display: "flex", gap: 4 }}>
-                    <Button sx={ buttonStyle } onClick={() => navigate('calculator')}>Kalkulator kalorii</Button>
-                    <Button sx={ buttonStyle } onClick={() => navigate('planner')}>Zaplanuj posiłek</Button>
+                    <Button sx={ buttonStyle } onClick={() => navigate('/calculator')}>Kalkulator BMI</Button>
+                    <Button sx={ buttonStyle } onClick={() => navigate('/planner')}>Zaplanuj posiłek</Button>
                 </Box>
 
                 <Box sx={{ display: "flex", gap: 4 }}>

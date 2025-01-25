@@ -1,4 +1,3 @@
-// src/components/Footer.jsx
 import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -11,8 +10,8 @@ function Footer() {
                 backgroundColor: '#000000',
                 opacity: 0.2,
                 color: 'white',
-                padding: 2,
-                position: 'fixed',
+                paddingY: 2,
+                position: 'sticky',
                 bottom: 0,
                 width: '100%',
                 textAlign: 'center',

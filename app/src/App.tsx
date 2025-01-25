@@ -18,7 +18,6 @@ function App() {
         <Route path="/calculator" element={<Calculator />} />
         <Route path="/recipies/admin/:id" element={<AdminBrowseRecipies />} />
         <Route path="/recipies/user/:id" element={<AdminBrowseRecipies />} />
-
         <Route path="/calculator" element={<Calculator />} />
       </Routes>
     </Router>

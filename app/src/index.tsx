@@ -13,17 +13,32 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    navBar: Palette["primary"];
+    customGreen: Palette["primary"];
+  }
+
+  interface PaletteOptions {
+    navBar?: PaletteOptions["primary"];
+    customGreen?: PaletteOptions["primary"];
+  }
+}
+
 const theme = createTheme({
   typography: {
     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
   },
   palette: {
     primary: {
-      main: "#1976d2", // Customize your primary color
+      main: "#e3e3e3", // Customize your primary color
     },
     secondary: {
-      main: "#dc004e", // Customize your secondary color
+      main: "#292525", // Customize your secondary color
     },
+    navBar: {
+      main: "#8aa251",
+    }
   },
 });
 

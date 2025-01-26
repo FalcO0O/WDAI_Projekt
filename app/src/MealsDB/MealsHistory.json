@@ -1,0 +1,35 @@
+[
+  {
+    "userID": 1,
+    "date": "2025-01-29T21:35:05.434Z",
+    "mealName": "Śniadanie",
+    "productName": "Masło",
+    "grams": 10,
+    "calories": "71.70",
+    "proteins": "0.09",
+    "carbs": "0.01",
+    "fats": "8.10"
+  },
+  {
+    "userID": 1,
+    "date": "2025-01-29T21:35:05.434Z",
+    "mealName": "Śniadanie",
+    "productName": "Ziemniak",
+    "grams": 12,
+    "calories": "9.24",
+    "proteins": "0.24",
+    "carbs": "2.04",
+    "fats": "0.01"
+  },
+  {
+    "userID": 1,
+    "date": "2025-01-29T21:35:05.434Z",
+    "mealName": "Śniadanie",
+    "productName": "Jabłko",
+    "grams": -1,
+    "calories": "-0.52",
+    "proteins": "-0.00",
+    "carbs": "-0.14",
+    "fats": "-0.00"
+  }
+]

@@ -19,6 +19,10 @@ app.post("/api/meals", (req, res) => {
   // Logowanie przychodzących danych dla debugowania
   console.log("Otrzymano dane:", newRecord);
 
+  // Dodajemy unikalne ID oparte na dacie
+  const uniqueID = Date.now(); // Możesz użyć UUID, jeśli potrzebujesz bardziej unikalnych identyfikatorów
+  const recordWithID = { ...newRecord, id: uniqueID };
+
   fs.readFile(mealsHistoryPath, "utf8", (err, data) => {
     if (err) {
       console.error("Błąd podczas odczytu pliku:", err);
@@ -32,7 +36,7 @@ app.post("/api/meals", (req, res) => {
       console.error("Błąd podczas parsowania JSON:", parseError);
     }
 
-    meals.push(newRecord);
+    meals.push(recordWithID);
 
     fs.writeFile(
       mealsHistoryPath,
@@ -49,8 +53,8 @@ app.post("/api/meals", (req, res) => {
 });
 
 // Trasa do usuwania rekordu posiłku
-app.delete("/api/meals/:userID/:date/:mealName/:productName", (req, res) => {
-  const { userID, date, mealName, productName } = req.params;
+app.delete("/api/meals/:id", (req, res) => {
+  const { id } = req.params;
 
   fs.readFile(mealsHistoryPath, "utf8", (err, data) => {
     if (err) {
@@ -66,16 +70,8 @@ app.delete("/api/meals/:userID/:date/:mealName/:productName", (req, res) => {
       return res.status(500).json({ error: "Failed to parse JSON" });
     }
 
-    // Filtrujemy posiłki, aby usunąć tylko ten, który pasuje do wszystkich parametrów
-    const updatedMeals = meals.filter(
-      (meal) =>
-        !(
-          meal.userID == userID &&
-          meal.date === date &&
-          meal.mealName === mealName &&
-          meal.productName === productName
-        )
-    );
+    // Filtrujemy posiłki, aby usunąć tylko ten, który ma odpowiednie ID
+    const updatedMeals = meals.filter((meal) => meal.id !== parseInt(id));
 
     // Jeśli nie znaleziono rekordu do usunięcia
     if (updatedMeals.length === meals.length) {

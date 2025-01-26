@@ -11,7 +11,6 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 import products from "../../MealsDB/products.json";
-import mealHistory from "../../MealsDB/MealsHistory.json";
 import ProductListModal from "./ProductListModal";
 import GramsModal from "./GramsModal";
 
@@ -21,6 +20,21 @@ interface MealInfoProps {
   currentDate: Date;
   mealName: string;
 }
+
+interface MealHistoryEntry {
+  userID: number;
+  date: string;
+  mealName: string;
+  productName: string;
+  grams: number;
+  calories: string;
+  proteins: string;
+  carbs: string;
+  fats: string;
+  id: number;
+}
+
+const mealHistory: MealHistoryEntry[] = require("../../MealsDB/MealsHistory.json");
 
 const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName }) => {
   const [openProductsModal, setOpenProductsModal] = useState(false);
@@ -81,9 +95,8 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName }) => {
   const handleRemoveProduct = async (product: any) => {
     try {
       // Usunięcie rekordu z bazy danych
-      await axios.delete(
-        `/api/meals/${product.userID}/${product.date}/${product.mealName}/${product.productName}`
-      );
+      await axios.delete(`/api/meals/${product.id}`);
+
       // Przeładuj listę lub zmodyfikuj stan (np. w przypadku korzystania z lokalnego stanu)
     } catch (error) {
       console.error("Błąd przy usuwaniu produktu:", error);

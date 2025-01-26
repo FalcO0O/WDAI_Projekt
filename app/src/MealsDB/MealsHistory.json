@@ -1,46 +1,62 @@
 [
   {
     "userID": 1,
-    "date": "2025-01-29T21:35:05.434Z",
+    "date": "2025-01-27T22:05:34.442Z",
     "mealName": "Śniadanie",
     "productName": "Masło",
     "grams": 10,
     "calories": "71.70",
     "proteins": "0.09",
     "carbs": "0.01",
-    "fats": "8.10"
+    "fats": "8.10",
+    "id": 1737932296438
   },
   {
     "userID": 1,
-    "date": "2025-01-29T21:35:05.434Z",
-    "mealName": "Śniadanie",
-    "productName": "Ziemniak",
-    "grams": 12,
-    "calories": "9.24",
-    "proteins": "0.24",
-    "carbs": "2.04",
-    "fats": "0.01"
+    "date": "2025-01-26T22:05:34.442Z",
+    "mealName": "Obiad",
+    "productName": "Banan",
+    "grams": 80,
+    "calories": "71.20",
+    "proteins": "0.88",
+    "carbs": "18.40",
+    "fats": "0.24",
+    "id": 1737932306900
   },
   {
     "userID": 1,
-    "date": "2025-01-29T21:35:05.434Z",
-    "mealName": "Śniadanie",
+    "date": "2025-01-26T22:05:34.442Z",
+    "mealName": "Kolacja",
     "productName": "Jabłko",
-    "grams": -1,
-    "calories": "-0.52",
-    "proteins": "-0.00",
-    "carbs": "-0.14",
-    "fats": "-0.00"
+    "grams": 90,
+    "calories": "46.80",
+    "proteins": "0.27",
+    "carbs": "12.60",
+    "fats": "0.18",
+    "id": 1737932313437
   },
   {
     "userID": 1,
     "date": "2025-01-27T22:05:34.442Z",
-    "mealName": "Śniadanie",
-    "productName": "Jabłko",
-    "grams": 123,
-    "calories": "63.96",
-    "proteins": "0.37",
-    "carbs": "17.22",
-    "fats": "0.25"
+    "mealName": "Obiad",
+    "productName": "Masło",
+    "grams": 20,
+    "calories": "143.40",
+    "proteins": "0.18",
+    "carbs": "0.02",
+    "fats": "16.20",
+    "id": 1737932323575
+  },
+  {
+    "userID": 1,
+    "date": "2025-01-27T22:05:34.442Z",
+    "mealName": "Kolacja",
+    "productName": "Marchew",
+    "grams": 80,
+    "calories": "32.80",
+    "proteins": "0.72",
+    "carbs": "8.00",
+    "fats": "0.16",
+    "id": 1737932329981
   }
 ]

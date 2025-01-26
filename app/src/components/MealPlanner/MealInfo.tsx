@@ -3,19 +3,18 @@ import {
   Box,
   Typography,
   IconButton,
-  Modal,
   List,
   ListItem,
   ListItemText,
-  TextField,
-  Button,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import axios from "axios"; // Do komunikacji z backendem
-import products from "../../MealsDB/products.json"; // Plik z produktami
+import axios from "axios";
+import products from "../../MealsDB/products.json";
+import mealHistory from "../../MealsDB/MealsHistory.json";
+import ProductListModal from "./ProductListModal";
+import GramsModal from "./GramsModal";
 
-// Ustawienie bazowego URL
-axios.defaults.baseURL = "http://localhost:5000"; // Zmień na odpowiedni URL backendu
+axios.defaults.baseURL = "http://localhost:5000";
 
 interface MealInfoProps {
   currentDate: Date;
@@ -44,47 +43,38 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName }) => {
     setError(null);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value.toLowerCase());
-  };
-
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm)
-  );
-
   const handleSubmitGrams = async () => {
     if (grams === null || grams <= 0) {
       setError("Wartość gramów musi być większa niż 0");
       return;
     }
 
-    if (selectedProduct && grams) {
-      const calories = (grams / 100) * selectedProduct.calories_per_100g;
-      const proteins = (grams / 100) * selectedProduct.protein_per_100g;
-      const carbs = (grams / 100) * selectedProduct.carbs_per_100g;
-      const fats = (grams / 100) * selectedProduct.fat_per_100g;
+    const record = {
+      userID: 1,
+      date: currentDate.toISOString(),
+      mealName,
+      productName: selectedProduct?.name,
+      grams,
+      calories: ((grams / 100) * selectedProduct?.calories_per_100g).toFixed(2),
+      proteins: ((grams / 100) * selectedProduct?.protein_per_100g).toFixed(2),
+      carbs: ((grams / 100) * selectedProduct?.carbs_per_100g).toFixed(2),
+      fats: ((grams / 100) * selectedProduct?.fat_per_100g).toFixed(2),
+    };
 
-      const record = {
-        userID: 1,
-        date: currentDate.toISOString(),
-        mealName,
-        productName: selectedProduct.name,
-        grams,
-        calories: calories.toFixed(2),
-        proteins: proteins.toFixed(2),
-        carbs: carbs.toFixed(2),
-        fats: fats.toFixed(2),
-      };
-
-      try {
-        const response = await axios.post("/api/meals", record);
-        console.log(response.data.message);
-        handleCloseGramsModal();
-      } catch (error) {
-        console.error("Błąd przy zapisie danych:", error);
-      }
+    try {
+      await axios.post("/api/meals", record);
+      handleCloseGramsModal();
+    } catch (error) {
+      console.error("Błąd przy zapisie danych:", error);
     }
   };
+
+  // Filtracja historii posiłków na podstawie daty i nazwy posiłku
+  const formattedDate = currentDate.toISOString().split("T")[0];
+  const consumedProducts = mealHistory.filter(
+    (entry) =>
+      entry.date.startsWith(formattedDate) && entry.mealName === mealName
+  );
 
   return (
     <Box
@@ -98,169 +88,48 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName }) => {
       }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-          {mealName}
-        </Typography>
+        <Typography variant="h6">{mealName}</Typography>
         <IconButton color="success" onClick={handleOpenProductsModal}>
           <AddIcon />
         </IconButton>
       </Box>
 
-      {/* Modal z listą produktów */}
-      <Modal
+      {/* Lista spożytych produktów */}
+      <List>
+        {consumedProducts.length > 0 ? (
+          consumedProducts.map((product, index) => (
+            <ListItem key={index}>
+              <ListItemText
+                primary={`${product.productName} (${product.grams} g)`}
+                secondary={`Kalorie: ${product.calories} kcal, Białko: ${product.proteins} g, Węglowodany: ${product.carbs} g, Tłuszcze: ${product.fats} g`}
+              />
+            </ListItem>
+          ))
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            Brak spożytych produktów dla tego posiłku
+          </Typography>
+        )}
+      </List>
+
+      {/* Modale */}
+      <ProductListModal
         open={openProductsModal}
         onClose={handleCloseProductsModal}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            padding: "20px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-            maxHeight: "80vh",
-            overflowY: "auto",
-            width: "400px",
-          }}
-        >
-          <Typography variant="h6" sx={{ marginBottom: "20px" }}>
-            Dodaj produkt do
-            {mealName === "Śniadanie"
-              ? " śniadania"
-              : mealName === "Obiad"
-              ? " obiadu"
-              : mealName === "Kolacja"
-              ? " kolacji"
-              : mealName}
-          </Typography>
-          <TextField
-            fullWidth
-            placeholder="Wyszukaj produkt..."
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            sx={{ marginBottom: "20px" }}
-          />
-          <List>
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product, index) => (
-                <ListItem
-                  key={index}
-                  secondaryAction={
-                    <IconButton
-                      color="success"
-                      onClick={() => handleOpenGramsModal(product)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemText
-                    primary={product.name}
-                    secondary={
-                      <>
-                        <Typography>
-                          Kalorie: {product.calories_per_100g} kcal/100g
-                        </Typography>
-                        <Typography>
-                          Białko: {product.protein_per_100g} g/100g
-                        </Typography>
-                        <Typography>
-                          Węglowodany: {product.carbs_per_100g} g/100g
-                        </Typography>
-                        <Typography>
-                          Tłuszcze: {product.fat_per_100g} g/100g
-                        </Typography>
-                      </>
-                    }
-                  />
-                </ListItem>
-              ))
-            ) : (
-              <Typography variant="body2" color="textSecondary">
-                Brak wyników
-              </Typography>
-            )}
-          </List>
-        </Box>
-      </Modal>
-
-      {/* Modal wprowadzania gramów */}
-      <Modal
+        products={products}
+        searchTerm={searchTerm}
+        onSearchChange={(e) => setSearchTerm(e.target.value)}
+        onSelectProduct={handleOpenGramsModal}
+      />
+      <GramsModal
         open={openGramsModal}
+        product={selectedProduct}
+        grams={grams}
+        error={error}
         onClose={handleCloseGramsModal}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            padding: "20px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-            width: "auto",
-          }}
-        >
-          <ListItemText
-            primary={
-              <>
-                <Typography variant="h6">Wprowadź ilość gramów dla:</Typography>
-                <Typography variant="h6">{selectedProduct?.name}</Typography>
-              </>
-            }
-            secondary={
-              <>
-                <Typography>
-                  Kalorie: {selectedProduct?.calories_per_100g} kcal/100g
-                </Typography>
-                <Typography>
-                  Białko: {selectedProduct?.protein_per_100g} g/100g
-                </Typography>
-                <Typography>
-                  Węglowodany: {selectedProduct?.carbs_per_100g} g/100g
-                </Typography>
-                <Typography>
-                  Tłuszcze: {selectedProduct?.fat_per_100g} g/100g
-                </Typography>
-              </>
-            }
-          />
-          <TextField
-            fullWidth
-            type="number"
-            placeholder="Ilość gramów"
-            variant="outlined"
-            value={grams || ""}
-            onChange={(e) => setGrams(Number(e.target.value))}
-            sx={{ marginBottom: "20px" }}
-            error={!!error}
-            helperText={error}
-          />
-          <Box display="flex" justifyContent="flex-end" gap="10px">
-            <Button
-              onClick={handleCloseGramsModal}
-              color="error"
-              variant="outlined"
-            >
-              Anuluj
-            </Button>
-            <Button
-              onClick={handleSubmitGrams}
-              color="primary"
-              variant="contained"
-            >
-              Zatwierdź
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+        onGramsChange={setGrams}
+        onSubmit={handleSubmitGrams}
+      />
     </Box>
   );
 };

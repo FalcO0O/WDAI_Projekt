@@ -34,35 +34,13 @@
   },
   {
     "userID": 1,
-    "date": "2025-01-26T22:04:56.317Z",
+    "date": "2025-01-27T22:05:34.442Z",
     "mealName": "Śniadanie",
     "productName": "Jabłko",
-    "grams": 10,
-    "calories": "5.20",
-    "proteins": "0.03",
-    "carbs": "1.40",
-    "fats": "0.02"
-  },
-  {
-    "userID": 1,
-    "date": "2025-01-26T22:05:34.442Z",
-    "mealName": "Śniadanie",
-    "productName": "Jabłko",
-    "grams": 50,
-    "calories": "26.00",
-    "proteins": "0.15",
-    "carbs": "7.00",
-    "fats": "0.10"
-  },
-  {
-    "userID": 1,
-    "date": "2025-01-26T22:05:34.442Z",
-    "mealName": "Śniadanie",
-    "productName": "Ziemniak",
-    "grams": 50,
-    "calories": "38.50",
-    "proteins": "1.00",
-    "carbs": "8.50",
-    "fats": "0.05"
+    "grams": 123,
+    "calories": "63.96",
+    "proteins": "0.37",
+    "carbs": "17.22",
+    "fats": "0.25"
   }
 ]

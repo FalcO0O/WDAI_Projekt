@@ -8,6 +8,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 import products from "../../MealsDB/products.json";
 import mealHistory from "../../MealsDB/MealsHistory.json";
@@ -76,6 +77,19 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName }) => {
       entry.date.startsWith(formattedDate) && entry.mealName === mealName
   );
 
+  // Funkcja do usuwania produktu
+  const handleRemoveProduct = async (product: any) => {
+    try {
+      // Usunięcie rekordu z bazy danych
+      await axios.delete(
+        `/api/meals/${product.userID}/${product.date}/${product.mealName}/${product.productName}`
+      );
+      // Przeładuj listę lub zmodyfikuj stan (np. w przypadku korzystania z lokalnego stanu)
+    } catch (error) {
+      console.error("Błąd przy usuwaniu produktu:", error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -87,22 +101,38 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName }) => {
         marginBottom: "15px",
       }}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6">{mealName}</Typography>
-        <IconButton color="success" onClick={handleOpenProductsModal}>
-          <AddIcon />
-        </IconButton>
-      </Box>
+      <List>
+        <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="h6">{mealName}</Typography>
+          <IconButton
+            edge="end"
+            color="success"
+            onClick={handleOpenProductsModal}
+          >
+            <AddIcon />
+          </IconButton>
+        </ListItem>
+      </List>
 
       {/* Lista spożytych produktów */}
       <List>
         {consumedProducts.length > 0 ? (
           consumedProducts.map((product, index) => (
-            <ListItem key={index}>
+            <ListItem
+              key={index}
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
               <ListItemText
                 primary={`${product.productName} (${product.grams} g)`}
                 secondary={`Kalorie: ${product.calories} kcal, Białko: ${product.proteins} g, Węglowodany: ${product.carbs} g, Tłuszcze: ${product.fats} g`}
               />
+              <IconButton
+                edge="end"
+                color="error"
+                onClick={() => handleRemoveProduct(product)}
+              >
+                <RemoveCircleIcon />
+              </IconButton>
             </ListItem>
           ))
         ) : (

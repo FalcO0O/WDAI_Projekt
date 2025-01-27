@@ -52,6 +52,36 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({ currentDate }) => {
           />
         ))}
       </Box>
+      <Box
+        sx={{
+          marginTop: "20px",
+          marginBottom: "50px",
+        }}
+      >
+        {["Kalorie", "Białko", "Węglowodany", "Tłuszcze"].map(
+          (nutrient, index) => (
+            <Box key={index} sx={{ marginBottom: "10px" }}>
+              <Typography variant="body1">{nutrient}</Typography>
+              <Box
+                sx={{
+                  height: "10px",
+                  backgroundColor: "#e0e0e0",
+                  borderRadius: "5px",
+                  overflow: "hidden",
+                }}
+              >
+                <Box
+                  sx={{
+                    height: "100%",
+                    width: `${Math.random() * 100}%`, // Placeholder for actual nutrient value
+                    backgroundColor: "#3f51b5",
+                  }}
+                />
+              </Box>
+            </Box>
+          )
+        )}
+      </Box>
     </Box>
   );
 };

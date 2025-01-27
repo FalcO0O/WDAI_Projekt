@@ -1,14 +1,36 @@
-// src/components/MealPlanner/DailyMealsInfo.tsx
-import React from "react";
-import MealInfo from "./MealInfo"; // Import komponentu MealInfo
+import React, { useState, useEffect } from "react";
+import MealInfo from "./MealInfo";
 import { Box, Typography } from "@mui/material";
+import MealsHistoryData from "../../MealsDB/MealsHistory.json"; // Import danych z JSON
 
-// Typowanie propsów
 interface DailyMealsInfoProps {
   currentDate: Date;
+  userID: number;
 }
 
-const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({ currentDate }) => {
+// Funkcja pomocnicza do obliczania sumy składnika
+const calculateNutrientSum = (
+  mealsHistory: any[],
+  nutrient: string,
+  userID: number,
+  date: string
+) => {
+  return mealsHistory
+    .filter(
+      (meal) =>
+        meal.userID === userID &&
+        new Date(meal.date).toLocaleDateString("pl-PL") === date
+    )
+    .reduce((sum, meal) => sum + parseFloat(meal[nutrient] || "0"), 0);
+};
+
+const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
+  currentDate,
+  userID,
+}) => {
+  const [mealsHistory, setMealsHistory] = useState<any[]>([]);
+
+  // Formatowanie daty
   const formattedDate = currentDate.toLocaleDateString("pl-PL", {
     weekday: "long",
     day: "numeric",
@@ -16,11 +38,14 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({ currentDate }) => {
     year: "numeric",
   });
 
-  const meals = [
-    { mealName: "Śniadanie", time: "08:00" },
-    { mealName: "Obiad", time: "13:00" },
-    { mealName: "Kolacja", time: "18:00" },
-  ];
+  useEffect(() => {
+    // Załaduj dane (dla symulacji załadunku JSON można to zastąpić fetch, jeśli dane są z serwera)
+    setMealsHistory(MealsHistoryData);
+  }, []);
+
+  // Obliczanie sum dla składników
+  const nutrients = ["calories", "proteins", "carbs", "fats"];
+  const nutrientLabels = ["Kalorie", "Białko", "Węglowodany", "Tłuszcze"];
 
   return (
     <Box
@@ -39,33 +64,54 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({ currentDate }) => {
       {/* Kontener flex na posiłki */}
       <Box
         sx={{
-          display: "flex", // Flexbox do wyświetlania posiłków obok siebie
-          justifyContent: "space-between", // Rozmieszczenie posiłków na całej szerokości
-          gap: "1vw", // Odstęp pomiędzy posiłkami
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "1vw",
         }}
       >
-        {meals.map((meal, index) => (
+        {["Śniadanie", "Obiad", "Kolacja"].map((mealName, index) => (
           <MealInfo
             key={index}
             currentDate={currentDate}
-            mealName={meal.mealName}
+            mealName={mealName}
+            userID={userID}
           />
         ))}
       </Box>
+
+      {/* Kontener flex na paski */}
       <Box
         sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1vw",
           marginTop: "20px",
-          marginBottom: "50px",
+          marginBottom: "94px",
         }}
       >
-        {["Kalorie", "Białko", "Węglowodany", "Tłuszcze"].map(
-          (nutrient, index) => (
+        {nutrients.map((nutrient, index) => {
+          const total = calculateNutrientSum(
+            mealsHistory,
+            nutrient,
+            userID,
+            currentDate.toLocaleDateString("pl-PL")
+          );
+          const mianownikMap: { [key: string]: number } = {
+            calories: 2000,
+            proteins: 50,
+            carbs: 275,
+            fats: 70,
+          };
+          const mianownik = mianownikMap[nutrient] || 50;
+          const percentage = Math.min((total / mianownik) * 100, 100); // Maksymalnie 100%
+
+          return (
             <Box key={index} sx={{ marginBottom: "10px" }}>
-              <Typography variant="body1">{nutrient}</Typography>
+              <Typography variant="body1">{nutrientLabels[index]}</Typography>
               <Box
                 sx={{
                   height: "10px",
-                  backgroundColor: "#e0e0e0",
+                  backgroundColor: "#c7d4a9",
                   borderRadius: "5px",
                   overflow: "hidden",
                 }}
@@ -73,14 +119,14 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({ currentDate }) => {
                 <Box
                   sx={{
                     height: "100%",
-                    width: `${Math.random() * 100}%`, // Placeholder for actual nutrient value
-                    backgroundColor: "#3f51b5",
+                    width: `${percentage}%`,
+                    backgroundColor: "#748844",
                   }}
                 />
               </Box>
             </Box>
-          )
-        )}
+          );
+        })}
       </Box>
     </Box>
   );

@@ -94,7 +94,7 @@ function DateDisplay({ currentDate, onDateChange }: DateDisplayProps) {
             minWidth: "auto",
           }}
         >
-          <CalendarMonthIcon fontSize="inherit" />
+          <CalendarMonthIcon fontSize="inherit" sx={{}} />
         </IconButton>
 
         <Box

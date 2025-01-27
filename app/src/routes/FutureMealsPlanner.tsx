@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 
 function FutureMealsPlanner() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // Typowanie stanu na Date
+  const userID = 2; // Define userID variable
 
   // Funkcja aktualizująca datę, parametryzowana jako Date
   const handleDateChange = (newDate: Date) => {
@@ -24,19 +25,26 @@ function FutureMealsPlanner() {
       <MealPlannerNavBar />
       <Box
         sx={{
-          marginTop: "80px", // Odległość od góry
-          flex: 1, // Elastyczna przestrzeń dla treści
           overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
+          backgroundColor: "#c7d4a9", // Kolor tła
         }}
       >
-        <DateDisplay
-          currentDate={selectedDate}
-          onDateChange={handleDateChange}
-        />
-        <DailyMealsInfo currentDate={selectedDate} />{" "}
-        {/* Dodajemy komponent DailyMealsInfo */}
+        <Box
+          sx={{
+            marginTop: "80px", // Odległość od góry
+            flex: 1, // Elastyczna przestrzeń dla treści
+            overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
+          }}
+        >
+          <DateDisplay
+            currentDate={selectedDate}
+            onDateChange={handleDateChange}
+          />
+          <DailyMealsInfo currentDate={selectedDate} userID={userID} />{" "}
+          {/* Dodajemy komponent DailyMealsInfo */}
+        </Box>
+        <Footer />
       </Box>
-      <Footer />
     </Box>
   );
 }

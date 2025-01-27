@@ -1,5 +1,12 @@
 import React, { FC } from "react";
-import { Box, Typography, Modal, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Modal,
+  TextField,
+  Button,
+  ListItemText,
+} from "@mui/material";
 
 interface GramsModalProps {
   open: boolean;
@@ -41,9 +48,31 @@ const GramsModal: FC<GramsModalProps> = ({
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
         Wprowadź ilość gramów dla:
       </Typography>
-      <Typography variant="subtitle1" sx={{ marginBottom: "20px" }}>
+      <Typography variant="subtitle1" sx={{}}>
         {product?.name || "Nie wybrano produktu"}
       </Typography>
+      {product && (
+        <Box sx={{ marginBottom: "20px" }}>
+          <ListItemText
+            secondary={
+              <>
+                <Typography variant="body2">
+                  Kalorie: {product.calories_per_100g} kcal/100g
+                </Typography>
+                <Typography variant="body2">
+                  Białko: {product.protein_per_100g} g/100g
+                </Typography>
+                <Typography variant="body2">
+                  Tłuszcz: {product.fat_per_100g} g/100g
+                </Typography>
+                <Typography variant="body2">
+                  Węglowodany: {product.carbs_per_100g} g/100g
+                </Typography>
+              </>
+            }
+          />
+        </Box>
+      )}
       <TextField
         fullWidth
         type="number"

@@ -80,7 +80,22 @@ const ProductListModal: FC<ProductListModalProps> = ({
               >
                 <ListItemText
                   primary={product.name}
-                  secondary={`Kalorie: ${product.calories_per_100g} kcal/100g`}
+                  secondary={
+                    <>
+                      <Typography variant="body2">
+                        Kalorie: {product.calories_per_100g} kcal/100g
+                      </Typography>
+                      <Typography variant="body2">
+                        Białko: {product.protein_per_100g} g/100g
+                      </Typography>
+                      <Typography variant="body2">
+                        Tłuszcz: {product.fat_per_100g} g/100g
+                      </Typography>
+                      <Typography variant="body2">
+                        Węglowodany: {product.carbs_per_100g} g/100g
+                      </Typography>
+                    </>
+                  }
                 />
               </ListItem>
             ))

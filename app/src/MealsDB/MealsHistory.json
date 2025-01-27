@@ -100,23 +100,23 @@
     "date": "2025-01-27T17:29:06.918Z",
     "mealName": "Śniadanie",
     "productName": "Jabłko",
-    "grams": 10,
-    "calories": "5.20",
-    "proteins": "0.03",
-    "carbs": "1.40",
-    "fats": "0.02",
-    "id": 1737999460957
+    "grams": 100,
+    "calories": "52.00",
+    "proteins": "0.30",
+    "carbs": "14.00",
+    "fats": "0.20",
+    "id": 1738000539248
   },
   {
     "userID": 2,
     "date": "2025-01-27T17:29:06.918Z",
     "mealName": "Śniadanie",
-    "productName": "Orzechy włoskie",
-    "grams": 200,
-    "calories": "1308.00",
-    "proteins": "30.00",
-    "carbs": "28.00",
-    "fats": "130.00",
-    "id": 1737999486660
+    "productName": "Banan",
+    "grams": 500,
+    "calories": "445.00",
+    "proteins": "5.50",
+    "carbs": "115.00",
+    "fats": "1.50",
+    "id": 1738000561160
   }
 ]

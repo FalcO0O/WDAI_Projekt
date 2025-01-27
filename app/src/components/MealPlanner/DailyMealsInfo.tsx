@@ -46,6 +46,12 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
   // Obliczanie sum dla składników
   const nutrients = ["calories", "proteins", "carbs", "fats"];
   const nutrientLabels = ["Kalorie", "Białko", "Węglowodany", "Tłuszcze"];
+  const nutrientRanges: { [key: string]: { min: number; max: number } } = {
+    calories: { min: 1800, max: 2200 },
+    proteins: { min: 45, max: 60 },
+    carbs: { min: 225, max: 300 },
+    fats: { min: 60, max: 80 },
+  };
 
   return (
     <Box
@@ -96,14 +102,18 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
             userID,
             currentDate.toLocaleDateString("pl-PL")
           );
-          const mianownikMap: { [key: string]: number } = {
-            calories: 2000,
-            proteins: 50,
-            carbs: 275,
-            fats: 70,
-          };
-          const mianownik = mianownikMap[nutrient] || 50;
-          const percentage = Math.min((total / mianownik) * 100, 100); // Maksymalnie 100%
+          const range = nutrientRanges[nutrient];
+          const percentage = Math.min((total / range.max) * 100, 100); // Maksymalnie 100%
+          const rangeStart = Math.max((range.min / range.max) * 100, 0); // Początek zakresu w %
+          const rangeEnd = Math.min((range.max / range.max) * 100, 100); // Koniec zakresu w %
+
+          // Ustal kolor paska w zależności od zakresu
+          let barColor = "#748844"; // Domyślny kolor (w optymalnym zakresie)
+          if (total < range.min) {
+            barColor = "#f39c12"; // Pomarańczowy (poniżej minimum)
+          } else if (total > range.max) {
+            barColor = "#e74c3c"; // Czerwony (powyżej maksimum)
+          }
 
           return (
             <Box key={index} sx={{ marginBottom: "10px" }}>
@@ -114,16 +124,39 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
                   backgroundColor: "#c7d4a9",
                   borderRadius: "5px",
                   overflow: "hidden",
+                  position: "relative",
                 }}
               >
+                {/* Pasek zakresu */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: `${rangeStart}%`,
+                    width: `${rangeEnd - rangeStart}%`,
+                    backgroundColor: "#aec081", // Jasnozielony dla zakresu
+                    zIndex: 1,
+                  }}
+                />
+                {/* Pasek wypełnienia */}
                 <Box
                   sx={{
                     height: "100%",
                     width: `${percentage}%`,
-                    backgroundColor: "#748844",
+                    backgroundColor: barColor,
+                    position: "relative",
+                    zIndex: 2,
                   }}
                 />
               </Box>
+              <Typography variant="caption" sx={{ display: "block" }}>
+                {`Spożyto: ${total.toFixed(2)} ${
+                  nutrient === "calories" ? "kcal" : "g"
+                } (zakres: ${range.min} - ${range.max} ${
+                  nutrient === "calories" ? "kcal" : "g"
+                })`}
+              </Typography>
             </Box>
           );
         })}

@@ -1,11 +1,11 @@
 // Home.js
 import React from "react";
 import ReactFullpage from "@fullpage/react-fullpage";
-import HomeBar from "../components/HomeBar";
-import Footer from "../components/Footer";
-import SectionOne from "../components/SectionOne";
-import SectionTwo from "../components/SectionTwo";
-import SectionThree from "../components/SectionThree";
+import HomeBar from "../components/Common/HomeBar";
+import Footer from "../components/Common/Footer";
+import SectionOne from "../components/MainPage/SectionOne";
+import SectionTwo from "../components/MainPage/SectionTwo";
+import SectionThree from "../components/MainPage/SectionThree";
 
 const anchors = ["section1", "section2", "section3"];
 

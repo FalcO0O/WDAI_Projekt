@@ -31,7 +31,7 @@ function FutureMealsPlanner() {
       >
         <Box
           sx={{
-            marginTop: "80px", // Odległość od góry
+            marginTop: "15px", // Odległość od góry
             flex: 1, // Elastyczna przestrzeń dla treści
             overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
           }}

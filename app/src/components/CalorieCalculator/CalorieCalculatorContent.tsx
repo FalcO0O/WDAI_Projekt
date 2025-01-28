@@ -38,7 +38,9 @@ const CalorieCalculatorContent = () => {
     }, [age, gender, weight, height, activity, goal]);
 
     return (
-        <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <Container maxWidth="sm" sx={{
+            mt: 4,
+        }}>
             <Typography variant="h4" align="center" gutterBottom>
                 Kalkulator Bilansu Kalorycznego
             </Typography>

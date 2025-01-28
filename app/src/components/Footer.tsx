@@ -7,18 +7,17 @@ function Footer() {
         <Box
             component="footer"
             sx={{
-                backgroundColor: '#000000',
-                opacity: 0.2,
+                backgroundColor: 'rgba(0,0,0,0.25)',
                 color: 'white',
                 paddingY: 2,
                 position: 'sticky',
                 bottom: 0,
-                width: '100%',
+                width: '100vw',
                 textAlign: 'center',
             }}
         >
             <Typography variant="body1">
-                © 2025 Moja Strona
+                © 2025 To tyle. Serio nic więcej nie ma.
             </Typography>
         </Box>
     );

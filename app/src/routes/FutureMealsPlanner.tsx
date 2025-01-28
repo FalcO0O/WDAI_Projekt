@@ -3,7 +3,7 @@ import MealPlannerNavBar from "../components/MealPlanner/NavBar";
 import Footer from "../components/Common/Footer";
 import DateDisplay from "../components/MealPlanner/DateDisplay";
 import DailyMealsInfo from "../components/MealPlanner/DailyMealsInfo"; // Importujemy nowy komponent
-import { Box } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 
 function FutureMealsPlanner() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // Typowanie stanu na Date
@@ -27,12 +27,14 @@ function FutureMealsPlanner() {
       <Box
         sx={{
           overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
-          backgroundColor: "#c7d4a9", // Kolor tła
+          backgroundColor: "#d8e1c3", // Kolor tła
         }}
       >
+        <Toolbar /> {/* Dodanie Toolbar, aby dodać przestrzeń pod HomeBar */}
         <Box
           sx={{
-            marginTop: "15px", // Odległość od góry
+
+            margin: "20px",
             flex: 1, // Elastyczna przestrzeń dla treści
             overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
           }}

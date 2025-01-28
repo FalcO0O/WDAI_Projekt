@@ -16,6 +16,11 @@ const CalorieCalculatorContent = () => {
         const ageNum = parseFloat(age);
         const activityNum = parseFloat(activity);
 
+        if ( weightNum < 0 || heightNum < 0 || ageNum < 0 ||
+             weightNum > 300 || heightNum > 250 || ageNum > 125
+        ) return -1;
+
+
         let bmr;
         if (gender === 'male') {
             bmr = 88.362 + (13.397 * weightNum) + (4.799 * heightNum) - (5.677 * ageNum);
@@ -40,6 +45,7 @@ const CalorieCalculatorContent = () => {
     return (
         <Container maxWidth="sm" sx={{
             mt: 4,
+            overflow: 'auto',
         }}>
             <Typography variant="h4" align="center" gutterBottom>
                 Kalkulator Bilansu Kalorycznego
@@ -110,11 +116,16 @@ const CalorieCalculatorContent = () => {
             </Box>
 
             {calories !== 0 && (
-                <Paper elevation={3} sx={{ mt: 4, p: 2, textAlign: 'center' }}>
+                <Paper elevation={3} sx={{ margin: '20px', textAlign: 'center' }}>
                     <Typography variant="h6">
-                        Dzienne zapotrzebowanie kaloryczne: <strong>{calories} kcal</strong>
+                        {calories !== -1 ? (
+                            <>Dzienne zapotrzebowanie kaloryczne: <strong>{calories} kcal</strong></>
+                        ) : (
+                            "Nieprawidłowe dane"
+                        )}
                     </Typography>
                 </Paper>
+
             )}
         </Container>
     );

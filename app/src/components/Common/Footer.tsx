@@ -10,9 +10,9 @@ function Footer() {
                 backgroundColor: 'rgba(0,0,0,0.25)',
                 color: 'white',
                 paddingY: 2,
-                position: 'sticky',
+                position: 'fixed',
                 bottom: 0,
-                width: '100vw',
+                width: '100%',
                 textAlign: 'center',
             }}
         >

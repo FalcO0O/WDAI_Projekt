@@ -6,7 +6,16 @@ import bgImage from "../resources/calorie-background.jpg";
 
 function CalorieCalculator() {
     return (
-        <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                overflowX: "hidden", // Zapobiega przewijaniu w poziomie
+                overflowY: "auto",
+                msOverflowStyle: 'hidden',
+            }}
+        >
             <HomeBar />
             <Box
                 sx={{
@@ -14,19 +23,23 @@ function CalorieCalculator() {
                     backgroundImage: `url(${bgImage})`,
                     backgroundSize: "cover",
                     backgroundRepeat: "no-repeat",
-                    backgroundPosition: "top",
-                    display: "flex", // Ustawienie flex na rodzicu
-                    justifyContent: "center", // Centrowanie w poziomie
-                    alignItems: "center", // Centrowanie w pionie
+                    backgroundPosition: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100vw", // Zapobiega przewijaniu w poziomie
+                    minHeight: "calc(100vh)", // Odejmowanie wysokości nagłówka i stopki (jeśli znane)
                 }}
             >
                 <Box
                     sx={{
                         backgroundColor: "#FFFFFF",
                         borderRadius: 4,
-                        width: "50%", // Możesz dostosować szerokość
-                        maxWidth: "600px", // Maksymalna szerokość
-                        padding: 3, // Dodanie paddingu dla lepszego wyglądu
+                        width: "90%", // Zapewnienie responsywności
+                        maxWidth: "600px",
+                        padding: 3,
+                        boxShadow: 3, // Dodanie subtelnego cienia
+                        height: "110%",
                     }}
                 >
                     <CalorieCalculatorContent />

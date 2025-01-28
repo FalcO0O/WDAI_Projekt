@@ -19,11 +19,11 @@ axios.defaults.baseURL = "http://localhost:5000";
 interface MealInfoProps {
   currentDate: Date;
   mealName: string;
-  userID: number;
+  username: string;
 }
 
 interface MealHistoryEntry {
-  userID: number;
+  username: string;
   date: string;
   mealName: string;
   productName: string;
@@ -40,7 +40,7 @@ const mealHistory: MealHistoryEntry[] = require("../../MealsDB/MealsHistory.json
 const MealInfo: React.FC<MealInfoProps> = ({
   currentDate,
   mealName,
-  userID,
+  username: username,
 }) => {
   const [openProductsModal, setOpenProductsModal] = useState(false);
   const [openGramsModal, setOpenGramsModal] = useState(false);
@@ -70,7 +70,7 @@ const MealInfo: React.FC<MealInfoProps> = ({
     }
 
     const record = {
-      userID: userID,
+      username: username,
       date: currentDate.toISOString(),
       mealName,
       productName: selectedProduct?.name,
@@ -95,7 +95,7 @@ const MealInfo: React.FC<MealInfoProps> = ({
     (entry) =>
       entry.date.startsWith(formattedDate) &&
       entry.mealName === mealName &&
-      entry.userID === userID
+      entry.username === username
   );
 
   // Funkcja do usuwania produktu

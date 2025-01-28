@@ -9,51 +9,52 @@ const RegisterPage: React.FC = () => {
   const [message, setMessage] = useState<string>("");
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        minWidth: "100vw",
-        backgroundColor: "#d8e1c3", // Tło strony
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <Box>
       <HomeBar />
-      <Paper
+      <Box
         sx={{
-          maxWidth: 450,
-          width: "100%",
-          marginTop: "65px",
-          backgroundColor: "#f4f4f4",
-          padding: "40px",
-          borderRadius: "8px", // Zaokrąglone rogi
-          boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)", // Cień
+          minHeight: "100vh",
+          minWidth: "100vw",
+          backgroundColor: "#d8e1c3", // Tło strony
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          position: "fixed",
+          justifyContent: "center",
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
+        <Paper
           sx={{
-            color: "#333", // Kolor nagłówka
-            fontWeight: "600", // Pogrubienie nagłówka
-            textAlign: "center",
-            marginBottom: "20px",
+            maxWidth: 450,
+            width: "100%",
+            backgroundColor: "#f4f4f4",
+            padding: "40px",
+            borderRadius: "8px", // Zaokrąglone rogi
+            boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)", // Cień
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            position: "fixed",
+            marginTop: "20px",
           }}
         >
-          Rejestracja
-        </Typography>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              color: "#333", // Kolor nagłówka
+              fontWeight: "600", // Pogrubienie nagłówka
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            Rejestracja
+          </Typography>
 
-        {/* Formularz */}
-        <RegisterForm setMessage={setMessage} setError={setError} />
+          {/* Formularz */}
+          <RegisterForm setMessage={setMessage} setError={setError} />
 
-        {/* Wyświetlanie błędów i komunikatów */}
-        <MessageDisplay error={error} message={message} />
-      </Paper>
+          {/* Wyświetlanie błędów i komunikatów */}
+          <MessageDisplay error={error} message={message} />
+        </Paper>
+      </Box>
     </Box>
   );
 };

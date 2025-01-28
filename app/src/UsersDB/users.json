@@ -1,0 +1,17 @@
+[
+  {
+    "username": "test",
+    "email": "test",
+    "password": "$2b$10$1cyiGBeNeQPncPHnu4kcMOs.PodzTbf7/ByS73U2y3BBLwY78xKpa"
+  },
+  {
+    "username": "test2",
+    "email": "test3",
+    "password": "$2b$10$PqRcWV/I.x.RD9dsZndV/uHf5VmLD0P6fBAggjGVdTnGeVAzhiSci"
+  },
+  {
+    "username": "testte",
+    "email": "testest",
+    "password": "$2b$10$MunKc/SCCZZgob8yz3Eu0.tNMosxYWlZARxs.uTI2YNrdL4d/M0Rm"
+  }
+]

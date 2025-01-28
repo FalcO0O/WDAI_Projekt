@@ -3,11 +3,11 @@ import MealPlannerNavBar from "../components/MealPlanner/NavBar";
 import Footer from "../components/Common/Footer";
 import DateDisplay from "../components/MealPlanner/DateDisplay";
 import DailyMealsInfo from "../components/MealPlanner/DailyMealsInfo"; // Importujemy nowy komponent
-import { Box, Toolbar } from "@mui/material";
+import { Box } from "@mui/material";
 
 function FutureMealsPlanner() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // Typowanie stanu na Date
-  const userID = 2; // Define userID variable
+  const username = "test"; // Define username variable
 
   // Funkcja aktualizująca datę, parametryzowana jako Date
   const handleDateChange = (newDate: Date) => {
@@ -30,7 +30,6 @@ function FutureMealsPlanner() {
           backgroundColor: "#d8e1c3", // Kolor tła
         }}
       >
-        <Toolbar /> {/* Dodanie Toolbar, aby dodać przestrzeń pod HomeBar */}
         <Box
           sx={{
             margin: "20px",
@@ -42,7 +41,7 @@ function FutureMealsPlanner() {
             currentDate={selectedDate}
             onDateChange={handleDateChange}
           />
-          <DailyMealsInfo currentDate={selectedDate} userID={userID} />{" "}
+          <DailyMealsInfo currentDate={selectedDate} username={username} />{" "}
           {/* Dodajemy komponent DailyMealsInfo */}
         </Box>
         <Footer />

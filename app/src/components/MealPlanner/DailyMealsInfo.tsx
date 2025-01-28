@@ -5,20 +5,20 @@ import MealsHistoryData from "../../MealsDB/MealsHistory.json"; // Import danych
 
 interface DailyMealsInfoProps {
   currentDate: Date;
-  userID: number;
+  username: string;
 }
 
 // Funkcja pomocnicza do obliczania sumy składnika
 const calculateNutrientSum = (
   mealsHistory: any[],
   nutrient: string,
-  userID: number,
+  username: string,
   date: string
 ) => {
   return mealsHistory
     .filter(
       (meal) =>
-        meal.userID === userID &&
+        meal.username === username &&
         new Date(meal.date).toLocaleDateString("pl-PL") === date
     )
     .reduce((sum, meal) => sum + parseFloat(meal[nutrient] || "0"), 0);
@@ -26,7 +26,7 @@ const calculateNutrientSum = (
 
 const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
   currentDate,
-  userID,
+  username: username,
 }) => {
   const [mealsHistory, setMealsHistory] = useState<any[]>([]);
 
@@ -80,7 +80,7 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
             key={index}
             currentDate={currentDate}
             mealName={mealName}
-            userID={userID}
+            username={username}
           />
         ))}
       </Box>
@@ -99,7 +99,7 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
           const total = calculateNutrientSum(
             mealsHistory,
             nutrient,
-            userID,
+            username,
             currentDate.toLocaleDateString("pl-PL")
           );
           const range = nutrientRanges[nutrient];

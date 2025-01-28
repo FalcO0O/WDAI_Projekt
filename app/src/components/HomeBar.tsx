@@ -13,7 +13,7 @@ function HomeBar() {
     const isActive = (path: string) => location.pathname === path;
 
     return (
-        <AppBar position="fixed" sx={{ width: "100vw", boxSizing: "border-box" }}>
+        <AppBar position="sticky" sx={{ width: "100vw", boxSizing: "border-box" }}>
             <Toolbar
                 sx={{
                     display: "flex",

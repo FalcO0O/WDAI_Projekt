@@ -36,7 +36,7 @@ function BMICalculator() {
     return (
         <Box
             sx={{
-                height: "100vh",
+                height: "100%",
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",

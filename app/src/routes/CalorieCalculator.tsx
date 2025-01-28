@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import HomeBar from "../components/HomeBar";
 import Footer from "../components/Footer";
 import CalorieCalculatorContent from "../components/CalorieCalculatorContent";

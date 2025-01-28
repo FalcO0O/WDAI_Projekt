@@ -57,7 +57,7 @@ function BMICalculator() {
             >
                 <Box
                     sx={{
-                        backgroundColor: "rgba(238, 241, 238, 0.8)",
+                        backgroundColor: "rgba(238, 241, 238, 0.99)",
                         borderRadius: "20px",
                         boxShadow: 3,
                         padding: { xs: "20px", sm: "40px" },

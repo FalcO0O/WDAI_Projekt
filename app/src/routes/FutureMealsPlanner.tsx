@@ -1,21 +1,51 @@
-import React from "react";
-import Button from "@mui/material/Button";
-export {};
+import React, { useState, useEffect } from "react";
+import MealPlannerNavBar from "../components/MealPlanner/NavBar";
+import Footer from "../components/Footer";
+import DateDisplay from "../components/MealPlanner/DateDisplay";
+import DailyMealsInfo from "../components/MealPlanner/DailyMealsInfo"; // Importujemy nowy komponent
+import { Box } from "@mui/material";
 
 function FutureMealsPlanner() {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // Typowanie stanu na Date
+  const userID = 2; // Define userID variable
+
+  // Funkcja aktualizująca datę, parametryzowana jako Date
+  const handleDateChange = (newDate: Date) => {
+    setSelectedDate(newDate); // Ustawienie nowej daty
+  };
+
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
+        flexDirection: "column", // Elementy w kolumnie
+        minHeight: "100vh", // Wysokość na całą stronę
       }}
     >
-      <Button variant="contained" color="primary">
-        Hello FutureMeals
-      </Button>
-    </div>
+      <MealPlannerNavBar />
+      <Box
+        sx={{
+          overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
+          backgroundColor: "#c7d4a9", // Kolor tła
+        }}
+      >
+        <Box
+          sx={{
+            marginTop: "80px", // Odległość od góry
+            flex: 1, // Elastyczna przestrzeń dla treści
+            overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
+          }}
+        >
+          <DateDisplay
+            currentDate={selectedDate}
+            onDateChange={handleDateChange}
+          />
+          <DailyMealsInfo currentDate={selectedDate} userID={userID} />{" "}
+          {/* Dodajemy komponent DailyMealsInfo */}
+        </Box>
+        <Footer />
+      </Box>
+    </Box>
   );
 }
 

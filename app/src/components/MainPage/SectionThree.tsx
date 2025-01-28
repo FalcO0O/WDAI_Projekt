@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, Box } from "@mui/material";
-import backgroundImage from "../resources/home-bg3.jpg";
+import backgroundImage from "../../resources/home-bg3.jpg";
 
 function SectionThree() {
     return (

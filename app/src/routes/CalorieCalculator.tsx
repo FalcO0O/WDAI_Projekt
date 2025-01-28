@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
-import HomeBar from "../components/HomeBar";
-import Footer from "../components/Footer";
-import CalorieCalculatorContent from "../components/CalorieCalculatorContent";
+import HomeBar from "../components/Common/HomeBar";
+import Footer from "../components/Common/Footer";
+import CalorieCalculatorContent from "../components/CalorieCalculator/CalorieCalculatorContent";
 import bgImage from "../resources/calorie-background.jpg";
 
 function CalorieCalculator() {

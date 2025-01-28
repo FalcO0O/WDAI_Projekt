@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MealPlannerNavBar from "../components/MealPlanner/NavBar";
-import Footer from "../components/Footer";
+import Footer from "../components/Common/Footer";
 import DateDisplay from "../components/MealPlanner/DateDisplay";
 import DailyMealsInfo from "../components/MealPlanner/DailyMealsInfo"; // Importujemy nowy komponent
 import { Box } from "@mui/material";

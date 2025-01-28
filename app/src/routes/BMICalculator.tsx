@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Box, TextField, Grid } from "@mui/material";
-import HomeBar from "../components/HomeBar";
-import Footer from "../components/Footer";
+import HomeBar from "../components/Common/HomeBar";
+import Footer from "../components/Common/Footer";
 import backgroundImage from "../resources/BMI-background.jpg";
 
 function BMICalculator() {

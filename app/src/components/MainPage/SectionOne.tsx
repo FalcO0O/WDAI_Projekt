@@ -1,19 +1,19 @@
 import React from "react";
 import { Typography, Box } from "@mui/material";
-import backgroundImage from "../resources/home-bg2.jpg";
+import backgroundImage from "../../resources/home-bg1.png";
 
-function SectionTwo() {
+function SectionOne() {
     return (
         <Box
             sx={{
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
-                backgroundPosition: 'right',
+                backgroundPosition: 'left',
                 width: '100%',
                 height: '100vh', // Pełna wysokość widoku
                 display: 'flex',
-                justifyContent: 'flex-start', // Wyrównanie zawartości do prawej
+                justifyContent: 'flex-end', // Wyrównanie zawartości do prawej
                 alignItems: 'center', // Wyśrodkowanie w pionie
                 boxSizing: 'border-box',
                 padding: { xs: 2, md: 4 },
@@ -21,7 +21,7 @@ function SectionTwo() {
         >
             <Box
                 sx={{
-                    width: { xs: '90%', md: '40%' }, // Pełna szerokość na małych ekranach, 50% na średnich i większych
+                    width: { xs: '100%', md: '50%' }, // Pełna szerokość na małych ekranach, 50% na średnich i większych
                     backgroundColor: 'rgba(255, 255, 255, 0.8)', // Opcjonalnie: półprzezroczyste tło dla lepszej czytelności
                     padding: 4,
                     borderRadius: 2,
@@ -33,16 +33,16 @@ function SectionTwo() {
                 }}
             >
                 <Typography variant="h4" gutterBottom>
-                    Planer Diety!
+                    Kalkulator Kalorii!
                 </Typography>
                 <Typography variant="h6">
-                    Ułóż idealny jadłospis dopasowany do Twoich celów! Nasz planer diety pomoże Ci stworzyć zdrowy plan
-                    żywieniowy zgodnie z Twoimi preferencjami i zapotrzebowaniem kalorycznym.
-                    Wybieraj spośród setek przepisów i śledź swoje postępy.
+                    Sprawdź, ile kalorii spożywasz każdego dnia! Nasz kalkulator kalorii pozwala szybko obliczyć wartość energetyczną
+                    Twoich posiłków, pomagając w świadomym zarządzaniu dietą. Wystarczy wprowadzić składniki lub wybrać gotowe danie,
+                    a my zajmiemy się resztą!
                 </Typography>
             </Box>
         </Box>
     );
 }
 
-export default SectionTwo;
+export default SectionOne;

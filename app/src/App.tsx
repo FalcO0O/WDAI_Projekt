@@ -7,6 +7,9 @@ import MealsHistory from "./routes/MealsHistory";
 import FutureMealsPlanner from "./routes/FutureMealsPlanner";
 import Calculator from "./routes/Calculator";
 import AdminBrowseRecipies from "./routes/AdminBrowseRecipies";
+import LoginPage from "./routes/LoginPage";
+import RegisterPage from "./routes/RegisterPage";
+
 function App() {
   return (
     <Router>
@@ -19,6 +22,8 @@ function App() {
         <Route path="/recipies/admin/:id" element={<AdminBrowseRecipies />} />
         <Route path="/recipies/user/:id" element={<AdminBrowseRecipies />} />
         <Route path="/calculator" element={<Calculator />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </Router>
   );

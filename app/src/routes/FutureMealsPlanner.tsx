@@ -26,7 +26,7 @@ function FutureMealsPlanner() {
       <Box
         sx={{
           overflowY: "auto", // Zapewnienie przewijania, jeśli treści będzie za dużo
-          backgroundColor: "#c7d4a9", // Kolor tła
+          backgroundColor: "#d8e1c3", // Kolor tła
         }}
       >
         <Toolbar /> {/* Dodanie Toolbar, aby dodać przestrzeń pod HomeBar */}

@@ -24,7 +24,6 @@ function App() {
         <Route path="/recipies/user/:id" element={<AdminBrowseRecipies />} />
         <Route path="/BMI_calculator" element={<BMICalculator />} />
         <Route path="/calorie_calculator" element={<CalorieCalculator />} />
-        <Route path="/calculator" element={<Calculator />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
-import HomeBar from "../components/HomeBar"; // Adjust the path as necessary
+import HomeBar from "../components/Common/HomeBar"; // Adjust the path as necessary
 
 function LoginPage() {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Box, Typography, Toolbar, Paper } from "@mui/material";
-import HomeBar from "../components/HomeBar";
+import { Box, Typography, Paper } from "@mui/material";
+import HomeBar from "../components/Common/HomeBar";
 import RegisterForm from "../components/RegisterForm";
 import MessageDisplay from "../components/MessageDisplay";
 

@@ -10,15 +10,13 @@ import {
     ListItem,
     ListItemButton,
     Theme,
-    SxProps,
+    SxProps, ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../resources/icon.png"
+import Login from "./Login";
 
-/**
- * Przykładowy obiekt stylów dla przycisków w nagłówku
- */
 const buttonSx: SxProps<Theme> = {
     color: "#fff",
     textTransform: "none",
@@ -29,10 +27,11 @@ const buttonSx: SxProps<Theme> = {
 };
 
 
-function HomeBar() {
+export function HomeBar() {
     const navigate = useNavigate();
     const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [loginOpen, setLoginOpen] = useState(false);
 
     /**
      * Funkcja sprawdzająca, czy aktualna ścieżka pokrywa się z podaną
@@ -57,11 +56,6 @@ function HomeBar() {
                         onClick={() => navigate("/")}
                     >
                         <img src = {Logo} width={50}/>
-                        <Box
-                            component="span"
-                            sx={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}
-                        >
-                        </Box>
                     </Box>
 
                     {/* Ikona menu (hamburger) wyświetlana na małych ekranach */}
@@ -118,15 +112,8 @@ function HomeBar() {
                             gap: { xs: 2, md: 3 },
                         }}
                     >
-                        <Button
-                            sx={{
-                                ...buttonSx,
-                                fontWeight: isActive("/login") ? "bold" : "normal",
-                            }}
-                            onClick={() => navigate("/login")}
-                        >
-                            Zaloguj
-                        </Button>
+                        <Login isListItem={false} open={loginOpen} setOpen={setLoginOpen} />
+
                         <Button
                             sx={{
                                 ...buttonSx,
@@ -140,7 +127,7 @@ function HomeBar() {
                 </Toolbar>
             </AppBar>
 
-            {/* Drawer - boczne menu (na małych ekranach) */}
+            {/* boczne menu (na małych ekranach) */}
             <Drawer
                 anchor="right"
                 open={menuOpen}
@@ -177,16 +164,17 @@ function HomeBar() {
                             Zaplanuj posiłek
                         </ListItemButton>
                     </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton
-                            onClick={() => {
-                                navigate("/login");
-                                setMenuOpen(false);
-                            }}
-                        >
-                            Zaloguj
-                        </ListItemButton>
+
+
+                    <ListItem disablePadding onClick={() => {
+                        setMenuOpen(false);
+                    }}>
+
+                        <Login isListItem={true} open={loginOpen} setOpen={setLoginOpen} />
                     </ListItem>
+
+
+
                     <ListItem disablePadding>
                         <ListItemButton
                             onClick={() => {
@@ -203,4 +191,4 @@ function HomeBar() {
     );
 }
 
-export default HomeBar;
+export default HomeBar

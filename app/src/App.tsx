@@ -8,6 +8,8 @@ import FutureMealsPlanner from "./routes/FutureMealsPlanner";
 import AdminBrowseRecipies from "./routes/AdminBrowseRecipies";
 import BMICalculator from "./routes/BMICalculator";
 import CalorieCalculator from "./routes/CalorieCalculator";
+import Register from "./components/Common/Register";
+
 function App() {
   return (
     <Router>
@@ -21,6 +23,7 @@ function App() {
         <Route path="/recipies/user/:id" element={<AdminBrowseRecipies />} />
         <Route path="/BMI_calculator" element={<BMICalculator />} />
         <Route path="/calorie_calculator" element={<CalorieCalculator />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

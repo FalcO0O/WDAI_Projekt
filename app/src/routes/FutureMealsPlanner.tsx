@@ -20,6 +20,7 @@ function FutureMealsPlanner() {
         display: "flex",
         flexDirection: "column", // Elementy w kolumnie
         minHeight: "100vh", // Wysokość na całą stronę
+          overflowY: "auto", // zatrzymuje homeBar na topie strony
       }}
     >
       <MealPlannerNavBar />

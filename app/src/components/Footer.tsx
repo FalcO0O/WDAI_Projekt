@@ -1,26 +1,26 @@
-import React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import React from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
-function Footer({ sx = {} }) {
-  return (
-    <Box
-      component="footer"
-      sx={{
-        backgroundColor: "#000000",
-        opacity: 0.2,
-        color: "white",
-        padding: 2,
-        position: "fixed",
-        bottom: 0,
-        width: "100%",
-        textAlign: "center",
-        ...sx, // Nadpisanie stylów przez prop
-      }}
-    >
-      <Typography variant="body1">© 2025 Moja Strona</Typography>
-    </Box>
-  );
+function Footer() {
+    return (
+        <Box
+            component="footer"
+            sx={{
+                backgroundColor: 'rgba(0,0,0,0.25)',
+                color: 'white',
+                paddingY: 2,
+                position: 'sticky',
+                bottom: 0,
+                width: '100vw',
+                textAlign: 'center',
+            }}
+        >
+            <Typography variant="body1">
+                © 2025 To tyle. Serio nic więcej nie ma.
+            </Typography>
+        </Box>
+    );
 }
 
 export default Footer;

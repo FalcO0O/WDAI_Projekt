@@ -32,12 +32,21 @@ function HomeBar() {
         </Box>
 
         <Box sx={{ display: "flex", gap: 4 }}>
-          <Button
+            <Button
+                sx={{
+                    ...buttonStyle,
+                    fontWeight: isActive("/BMI_calculator") ? "bold" : "normal",
+                }}
+                onClick={() => navigate("/BMI_calculator")}
+            >
+                Kalkulator BMI
+            </Button>
+            <Button
             sx={{
               ...buttonStyle,
-              fontWeight: isActive("/calculator") ? "bold" : "normal",
+              fontWeight: isActive("/calorie_calculator") ? "bold" : "normal",
             }}
-            onClick={() => navigate("/calculator")}
+            onClick={() => navigate("/calorie_calculator")}
           >
             Kalkulator kalorii
           </Button>

@@ -124,6 +124,9 @@ app.post('/register', (req, res) => {
     });
 });
 
+// TODO usunąć role z logowania, ustawimy adminów z ręki, dodać lepszy komunikat o zalogowaniu czy utworzeniu konta
+// TODO opcjonalnie zrobic logouta, zmienić szukanie w bazie żeby było poprawnie zrobione, wrzucic wspólną kolekjce z postmana na repo
+
 // Logowanie
 app.post('/login', (req, res) => {
     const { email, password } = req.body;

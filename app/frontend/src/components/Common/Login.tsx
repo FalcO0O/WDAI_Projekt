@@ -12,7 +12,7 @@ import {
 import { Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-const port = 5007;
+import {PORT} from "./PORT";
 
 const buttonSx: SxProps<Theme> = {
     color: "#fff",
@@ -48,7 +48,7 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
         }
 
         try {
-            const response = await fetch(`http://localhost:${port}/login`, {
+            const response = await fetch(`http://localhost:${PORT}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -58,15 +58,7 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
 
             if (response.ok) {
                 const data = await response.json();
-                // Otrzymasz accessToken i refreshToken, np.:
-                // {
-                //   message: "Zalogowano pomyślnie",
-                //   accessToken: "...",
-                //   refreshToken: "..."
-                // }
-
-                // Zazwyczaj przechowuje się tokeny w:
-                // localStorage lub w ciasteczkach (jeśli same HTTP-only).
+                // tokeny przechowujemy w localStorage
                 localStorage.setItem("accessToken", data.accessToken);
                 localStorage.setItem("refreshToken", data.refreshToken);
 

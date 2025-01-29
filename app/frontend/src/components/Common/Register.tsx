@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import HomeBar from "./HomeBar";
+import {PORT} from "./PORT";
 
-const port = 5007;
 
 interface FormState {
     firstName: string;
@@ -66,7 +66,7 @@ const Register: React.FC = () => {
         if (validate()) {
             console.log(`http://localhost:${process.env.SERVER_PORT}/register`)
             try {
-                const response = await fetch(`http://localhost:${port}/register`, {
+                const response = await fetch(`http://localhost:${PORT}/register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

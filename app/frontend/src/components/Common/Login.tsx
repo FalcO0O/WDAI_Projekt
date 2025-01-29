@@ -18,7 +18,7 @@ import {
 import { Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-import { PORT } from "./PORT";
+import { PORT } from "../../PORT";
 
 const buttonSx: SxProps<Theme> = {
     color: "#fff",
@@ -65,7 +65,13 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
 
             if (response.ok) {
                 const data = await response.json();
-                // Zapisujemy tokeny w localStorage
+                // Jeżeli ktoś już był zalogowany, usuńmy stare dane z localStorage
+                localStorage.removeItem("userID");
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+
+                // Zapisujemy dane nowego użytkownika
+                localStorage.setItem("userID", data.userId);  // <-- kluczowa zmiana
                 localStorage.setItem("accessToken", data.accessToken);
                 localStorage.setItem("refreshToken", data.refreshToken);
 

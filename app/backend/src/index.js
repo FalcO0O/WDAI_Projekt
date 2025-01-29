@@ -36,7 +36,8 @@ const db = new sqlite3.Database(dbFile, (err) => {
       lastName TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'user'
+      role TEXT NOT NULL DEFAULT 'user',
+      caloriesGoal INTEGER NOT NULL DEFAULT '2000'
     )
   `,
     (err) => {

@@ -97,26 +97,38 @@
   },
   {
     "userID": 2,
-    "date": "2025-01-27T17:29:06.918Z",
+    "date": "2025-01-28T21:22:14.628Z",
     "mealName": "Śniadanie",
-    "productName": "Jabłko",
+    "productName": "Banan",
     "grams": 100,
-    "calories": "52.00",
-    "proteins": "0.30",
-    "carbs": "14.00",
-    "fats": "0.20",
-    "id": 1738000539248
+    "calories": "89.00",
+    "proteins": "1.10",
+    "carbs": "23.00",
+    "fats": "0.30",
+    "id": 1738099338346
   },
   {
     "userID": 2,
-    "date": "2025-01-27T17:29:06.918Z",
+    "date": "2025-01-28T21:22:14.628Z",
     "mealName": "Śniadanie",
     "productName": "Banan",
-    "grams": 500,
-    "calories": "445.00",
-    "proteins": "5.50",
-    "carbs": "115.00",
-    "fats": "1.50",
-    "id": 1738000561160
+    "grams": 100,
+    "calories": "89.00",
+    "proteins": "1.10",
+    "carbs": "23.00",
+    "fats": "0.30",
+    "id": 1738099343429
+  },
+  {
+    "userID": 2,
+    "date": "2025-01-28T21:22:14.628Z",
+    "mealName": "Śniadanie",
+    "productName": "Banan",
+    "grams": 100,
+    "calories": "89.00",
+    "proteins": "1.10",
+    "carbs": "23.00",
+    "fats": "0.30",
+    "id": 1738099357727
   }
 ]

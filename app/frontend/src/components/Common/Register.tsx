@@ -12,6 +12,8 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import HomeBar from "./HomeBar";
 
+const port = 5007;
+
 interface FormState {
     firstName: string;
     lastName: string;
@@ -59,14 +61,48 @@ const Register: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            alert("Rejestracja zakończona sukcesem!");
-            setForm({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
-            setErrors({});
+            console.log(`http://localhost:${process.env.SERVER_PORT}/register`)
+            try {
+                const response = await fetch(`http://localhost:${port}/register`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        firstName: form.firstName,
+                        lastName: form.lastName,
+                        email: form.email,
+                        password: form.password
+                    })
+                });
+                if (response.ok) {
+                    // Udało się zarejestrować
+                    const data = await response.json();
+                    console.log(data); // np. { message: 'Użytkownik zarejestrowany...' }
+                    alert("Rejestracja zakończona sukcesem!");
+                    // wyczyść formularz
+                    setForm({
+                        firstName: "",
+                        lastName: "",
+                        email: "",
+                        password: "",
+                        confirmPassword: ""
+                    });
+                } else {
+                    // Błąd np. 400
+                    const errData = await response.json();
+                    alert(`Błąd rejestracji: ${errData.message}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Wystąpił błąd po stronie klienta lub sieci");
+            }
         }
     };
+
 
     return (
         <Box sx={{

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MealInfo from "./MealInfo";
 import { Box, Typography } from "@mui/material";
-import MealsHistoryData from "../../MealsDB/MealsHistory.json"; // Import danych z JSON
+import MealsHistoryData from "./MealsDB/MealsHistory.json"; // Import danych z JSON
 
 interface DailyMealsInfoProps {
   currentDate: Date;

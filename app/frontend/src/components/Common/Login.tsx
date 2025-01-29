@@ -12,6 +12,8 @@ import {
 import { Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
+const port = 5007;
+
 const buttonSx: SxProps<Theme> = {
     color: "#fff",
     textTransform: "none",
@@ -39,18 +41,47 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
         setError("");
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email || !password) {
             setError("Wypełnij wszystkie pola!");
             return;
         }
-        if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
-            setError("Niepoprawny email!");
-            return;
+
+        try {
+            const response = await fetch(`http://localhost:${port}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Otrzymasz accessToken i refreshToken, np.:
+                // {
+                //   message: "Zalogowano pomyślnie",
+                //   accessToken: "...",
+                //   refreshToken: "..."
+                // }
+
+                // Zazwyczaj przechowuje się tokeny w:
+                // localStorage lub w ciasteczkach (jeśli same HTTP-only).
+                localStorage.setItem("accessToken", data.accessToken);
+                localStorage.setItem("refreshToken", data.refreshToken);
+
+                alert("Zalogowano pomyślnie.");
+                handleClose();
+            } else {
+                const errData = await response.json();
+                setError(errData.message || "Błąd logowania");
+            }
+        } catch (err) {
+            console.error(err);
+            setError("Błąd sieci lub serwera");
         }
-        alert(`Logowanie: ${email}`);
-        handleClose();
     };
+
 
     if (isListItem) {
         return (

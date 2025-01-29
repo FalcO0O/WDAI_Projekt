@@ -10,7 +10,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
-import products from "../../MealsDB/products.json";
+import products from "./MealsDB/products.json";
 import ProductListModal from "./ProductListModal";
 import GramsModal from "./GramsModal";
 
@@ -35,7 +35,7 @@ interface MealHistoryEntry {
   id: number;
 }
 
-const mealHistory: MealHistoryEntry[] = require("../../MealsDB/MealsHistory.json");
+const mealHistory: MealHistoryEntry[] = require("./MealsDB/MealsHistory.json");
 
 const MealInfo: React.FC<MealInfoProps> = ({
   currentDate,

@@ -10,7 +10,7 @@ import {
     ListItem,
     ListItemButton,
     Theme,
-    SxProps, ListItemText,
+    SxProps,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useLocation } from "react-router-dom";

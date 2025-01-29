@@ -494,6 +494,31 @@ app.delete("/api/meals/:id", authenticateToken, (req, res) => {
   );
 });
 
+// ======================== ENDPOINTY PRODUKTÓW ========================
+
+/**
+ * GET /api/products
+ * Zwraca pełną listę produktów żywieniowych wraz z makro żywieniowymi.
+ * Wywoływane z frontu np. axios.get('/api/products')
+ */
+app.get("/api/products", authenticateToken, (req, res) => {
+  const sql = `
+    SELECT * 
+    FROM products
+    ORDER BY id DESC
+  `;
+
+  db.all(sql, (err, rows) => {
+    if (err) {
+      console.error("Błąd pobierania posiłków:", err);
+      return res
+        .status(500)
+        .json({ message: "Błąd podczas pobierania posiłków" });
+    }
+    res.json(rows);
+  });
+});
+
 // ====================== START SERWERA ======================
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

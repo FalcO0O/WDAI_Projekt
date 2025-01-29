@@ -6,8 +6,8 @@ import {
   CardContent,
   Container,
   Paper,
-  Tooltip, // Importujemy Tooltip z MUI
 } from "@mui/material";
+import { Link } from "react-router-dom"; // Importujemy Link z react-router-dom
 import recipesData from "./recipes.json";
 
 interface Ingredient {
@@ -20,9 +20,10 @@ interface Ingredient {
 }
 
 interface Recipe {
+  id: number; // Dodajemy id przepisu
   name: string;
   ingredients: Ingredient[];
-  description: string; // Zmienna 'description' do przechowywania opisu przepisu
+  description: string;
 }
 
 const RecipesList: React.FC = () => {
@@ -31,17 +32,14 @@ const RecipesList: React.FC = () => {
 
   useEffect(() => {
     setFilteredRecipes(
-      recipesData.filter((recipe) =>
+      recipesData.filter((recipe: Recipe) =>
         recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
   }, [searchQuery]);
 
   return (
-    <Container
-      maxWidth="lg" // Zmieniamy na "lg" dla szerszego komponentu
-      sx={{ marginTop: 5, marginBottom: 3 }} // Dodajemy margines na dole
-    >
+    <Container maxWidth="lg" sx={{ marginTop: 5, marginBottom: 3 }}>
       <Paper sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
         <Typography
           variant="h4"
@@ -82,41 +80,39 @@ const RecipesList: React.FC = () => {
                 sx={{ marginBottom: 3, borderRadius: 2, boxShadow: 1 }}
               >
                 <CardContent>
-                  {/* Tooltip na nazwie przepisu */}
-                  <Tooltip
-                    title={recipe.description}
-                    arrow
-                    placement="bottom" // Ustawiamy pozycję tooltipa na dole
-                    sx={{
-                      fontSize: "16px", // Ustalamy większy rozmiar czcionki
-                      maxWidth: "300px", // Maksymalna szerokość tooltipa
-                      backgroundColor: "rgba(0, 0, 0, 0.87)", // Tło tooltipa
-                    }}
+                  {/* Link do szczegółów przepisu bez podświetlania */}
+                  <Link
+                    to={`/recipe/${recipe.id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <Typography
                       variant="h5"
-                      sx={{ fontWeight: "bold", cursor: "pointer" }}
+                      sx={{ fontWeight: "bold", color: "inherit" }}
                     >
                       {recipe.name}
                     </Typography>
-                  </Tooltip>
+                  </Link>
 
                   <Typography variant="h6" sx={{ marginTop: 2 }}>
                     Składniki:
                   </Typography>
                   {recipe.ingredients.map((ing, i) => (
                     <Typography key={i} sx={{ marginLeft: 2 }}>
-                      - {ing.name}: {ing.grams}g
+                      - {ing.name}: {ing.grams.toFixed(2)}g
                     </Typography>
                   ))}
 
                   <Typography variant="h6" sx={{ marginTop: 2 }}>
                     Wartości odżywcze:
                   </Typography>
-                  <Typography>Kalorie: {total.calories} kcal</Typography>
-                  <Typography>Białko: {total.proteins} g</Typography>
-                  <Typography>Tłuszcze: {total.fats} g</Typography>
-                  <Typography>Węglowodany: {total.carbohydrates} g</Typography>
+                  <Typography>
+                    Kalorie: {total.calories.toFixed(2)} kcal
+                  </Typography>
+                  <Typography>Białko: {total.proteins.toFixed(2)} g</Typography>
+                  <Typography>Tłuszcze: {total.fats.toFixed(2)} g</Typography>
+                  <Typography>
+                    Węglowodany: {total.carbohydrates.toFixed(2)} g
+                  </Typography>
                 </CardContent>
               </Card>
             );

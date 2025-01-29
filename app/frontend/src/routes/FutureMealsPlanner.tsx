@@ -7,7 +7,14 @@ import { Box } from "@mui/material";
 
 function FutureMealsPlanner() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // Typowanie stanu na Date
-  const userID = 2; // Define userID variable
+    const [userID, setUserID] = useState<number>(0);
+
+    useEffect(() => {
+        const storedUserID = localStorage.getItem("userID");
+        if (storedUserID) {
+            setUserID(Number(storedUserID));
+        }
+    }, []);
 
   // Funkcja aktualizująca datę, parametryzowana jako Date
   const handleDateChange = (newDate: Date) => {

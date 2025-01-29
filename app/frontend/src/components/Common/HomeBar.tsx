@@ -145,9 +145,9 @@ export function HomeBar() {
             <Button
               sx={{
                 ...buttonSx,
-                fontWeight: isActive("/recipies") ? "bold" : "normal",
+                fontWeight: isActive("/recipes") ? "bold" : "normal",
               }}
-              onClick={() => navigate("/recipies")}
+              onClick={() => navigate("/recipes")}
             >
               Przepisy
             </Button>

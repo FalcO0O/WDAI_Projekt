@@ -8,7 +8,7 @@ import {
   Paper,
   Tooltip, // Importujemy Tooltip z MUI
 } from "@mui/material";
-import recipiesData from "./recipes.json";
+import recipesData from "./recipes.json";
 
 interface Ingredient {
   name: string;
@@ -27,11 +27,11 @@ interface Recipe {
 
 const RecipesList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredRecipies, setFilteredRecipies] = useState<Recipe[]>([]);
+  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
 
   useEffect(() => {
-    setFilteredRecipies(
-      recipiesData.filter((recipe) =>
+    setFilteredRecipes(
+      recipesData.filter((recipe) =>
         recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
@@ -59,12 +59,12 @@ const RecipesList: React.FC = () => {
           sx={{ marginBottom: 3 }}
         />
 
-        {filteredRecipies.length === 0 ? (
+        {filteredRecipes.length === 0 ? (
           <Typography variant="h6" sx={{ textAlign: "center" }}>
             Brak wyników dla Twojego zapytania.
           </Typography>
         ) : (
-          filteredRecipies.map((recipe, index) => {
+          filteredRecipes.map((recipe, index) => {
             const total = recipe.ingredients.reduce(
               (acc, ing) => {
                 acc.calories += ing.calories;

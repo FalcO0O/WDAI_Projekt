@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Sałatka Cezar",
+    "ingredients": [
+      {
+        "name": "Kurczak",
+        "grams": 150,
+        "calories": 165,
+        "proteins": 31,
+        "fats": 3.6,
+        "carbohydrates": 0
+      },
+      {
+        "name": "Sałata Rzymska",
+        "grams": 100,
+        "calories": 17,
+        "proteins": 1.2,
+        "fats": 0.3,
+        "carbohydrates": 3.3
+      },
+      {
+        "name": "Grzanki",
+        "grams": 50,
+        "calories": 200,
+        "proteins": 6,
+        "fats": 5,
+        "carbohydrates": 35
+      },
+      {
+        "name": "Sos Cezar",
+        "grams": 30,
+        "calories": 160,
+        "proteins": 1,
+        "fats": 16,
+        "carbohydrates": 2
+      }
+    ],
+    "description": "Pyszna sałatka Cezar z kurczakiem, sałatą rzymską, grzankami i sosem Cezar. Idealna na lekką kolację.",
+    "preparation": "1. Ugotuj pierś z kurczaka na patelni i pokrój na kawałki. 2. Umyj sałatę rzymską i porwij na mniejsze kawałki. 3. Przygotuj grzanki, a następnie polej je sosem Cezar. 4. Wszystko wymieszaj i podawaj na talerzu, posypując kawałkami kurczaka."
+  },
+  {
+    "id": 2,
+    "name": "Owsianka z Owocami",
+    "ingredients": [
+      {
+        "name": "Płatki Owsiane",
+        "grams": 80,
+        "calories": 312,
+        "proteins": 10,
+        "fats": 5.3,
+        "carbohydrates": 55
+      },
+      {
+        "name": "Mleko",
+        "grams": 200,
+        "calories": 130,
+        "proteins": 6.8,
+        "fats": 7.2,
+        "carbohydrates": 10
+      },
+      {
+        "name": "Banana",
+        "grams": 120,
+        "calories": 105,
+        "proteins": 1.3,
+        "fats": 0.3,
+        "carbohydrates": 27
+      },
+      {
+        "name": "Miód",
+        "grams": 20,
+        "calories": 64,
+        "proteins": 0.1,
+        "fats": 0,
+        "carbohydrates": 17
+      }
+    ],
+    "description": "Zdrowa i pożywna owsianka z owocami, mlekiem i miodem. Idealny sposób na rozpoczęcie dnia.",
+    "preparation": "1. Wlej mleko do garnka i podgrzewaj na średnim ogniu. 2. Dodaj płatki owsiane i gotuj, aż staną się miękkie. 3. Pokrój banana na plasterki. 4. Kiedy owsianka jest gotowa, dodaj banana i miód, a następnie dokładnie wymieszaj. Podawaj na ciepło."
+  }
+]

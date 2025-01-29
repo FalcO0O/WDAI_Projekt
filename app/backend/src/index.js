@@ -124,9 +124,6 @@ app.post('/register', (req, res) => {
     });
 });
 
-// TODO usunąć role z logowania, ustawimy adminów z ręki, dodać lepszy komunikat o zalogowaniu czy utworzeniu konta
-// TODO opcjonalnie zrobic logouta, zmienić szukanie w bazie żeby było poprawnie zrobione, wrzucic wspólną kolekjce z postmana na repo
-
 // Logowanie
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
@@ -221,5 +218,5 @@ app.get('/admin/data', authenticateToken, authorizeAdmin, (req, res) => {
 // ====================== START SERWERA ======================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Serwer działa na porciee ${PORT}`);
+    console.log(`Serwer działa na porcie ${PORT}`);
 });

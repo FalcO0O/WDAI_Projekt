@@ -7,12 +7,18 @@ import {
     DialogTitle,
     TextField,
     IconButton,
-    InputAdornment, SxProps, Theme, Box, ListItemButton
+    InputAdornment,
+    SxProps,
+    Theme,
+    Box,
+    ListItemButton,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-import {PORT} from "./PORT";
+import { PORT } from "./PORT";
 
 const buttonSx: SxProps<Theme> = {
     color: "#fff",
@@ -28,7 +34,9 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
+
+    // Snackbar do pokazywania wiadomości
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -38,12 +46,11 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
         setOpen(false);
         setEmail("");
         setPassword("");
-        setError("");
     };
 
     const handleLogin = async () => {
         if (!email || !password) {
-            setError("Wypełnij wszystkie pola!");
+            setSnackbar({ open: true, message: "Wypełnij wszystkie pola!", severity: "error" });
             return;
         }
 
@@ -58,22 +65,26 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
 
             if (response.ok) {
                 const data = await response.json();
-                // tokeny przechowujemy w localStorage
+                // Zapisujemy tokeny w localStorage
                 localStorage.setItem("accessToken", data.accessToken);
                 localStorage.setItem("refreshToken", data.refreshToken);
 
-                alert("Zalogowano pomyślnie.");
-                handleClose();
+                // Pokażemy sukces przez Snackbar
+                setSnackbar({ open: true, message: "Zalogowano pomyślnie!", severity: "success" });
+
+                setTimeout(() => {
+                    handleClose();
+                    navigate("/"); // Przekierowanie do strony głównej
+                }, 1500);
             } else {
                 const errData = await response.json();
-                setError(errData.message || "Błąd logowania");
+                setSnackbar({ open: true, message: errData.message || "Błąd logowania", severity: "error" });
             }
         } catch (err) {
             console.error(err);
-            setError("Błąd sieci lub serwera");
+            setSnackbar({ open: true, message: "Błąd sieci lub serwera", severity: "error" });
         }
     };
-
 
     if (isListItem) {
         return (
@@ -128,7 +139,6 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
                             )
                         }}
                     />
-                    {error && <p style={{ color: "red", fontSize: "14px" }}>{error}</p>}
                 </DialogContent>
                 <DialogActions sx={{ justifyContent: "space-between" }}>
                     <Button onClick={() => navigate("/register")} color="secondary">
@@ -144,6 +154,18 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
                     </Box>
                 </DialogActions>
             </Dialog>
+
+            {/* Snackbar do wyświetlania komunikatów */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000} // Zamknie się po 4 sekundach
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity as any}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </>
     );
 };

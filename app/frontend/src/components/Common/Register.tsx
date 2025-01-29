@@ -7,12 +7,13 @@ import {
     Container,
     Typography,
     Box,
-    Paper
+    Paper,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import HomeBar from "./HomeBar";
-import {PORT} from "./PORT";
-
+import { PORT } from "./PORT";
 
 interface FormState {
     firstName: string;
@@ -41,6 +42,9 @@ const Register: React.FC = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [errors, setErrors] = useState<Errors>({});
 
+    // Stan dla Snackbarów
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -64,7 +68,6 @@ const Register: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            console.log(`http://localhost:${process.env.SERVER_PORT}/register`)
             try {
                 const response = await fetch(`http://localhost:${PORT}/register`, {
                     method: "POST",
@@ -78,12 +81,15 @@ const Register: React.FC = () => {
                         password: form.password
                     })
                 });
+
                 if (response.ok) {
-                    // Udało się zarejestrować
                     const data = await response.json();
                     console.log(data); // np. { message: 'Użytkownik zarejestrowany...' }
-                    alert("Rejestracja zakończona sukcesem!");
-                    // wyczyść formularz
+
+                    // Ustawienie sukcesu w Snackbar
+                    setSnackbar({ open: true, message: "Rejestracja zakończona sukcesem!", severity: "success" });
+
+                    // Wyczyszczenie formularza
                     setForm({
                         firstName: "",
                         lastName: "",
@@ -92,17 +98,15 @@ const Register: React.FC = () => {
                         confirmPassword: ""
                     });
                 } else {
-                    // Błąd np. 400
                     const errData = await response.json();
-                    alert(`Błąd rejestracji: ${errData.message}`);
+                    setSnackbar({ open: true, message: `Błąd: ${errData.message}`, severity: "error" });
                 }
             } catch (error) {
                 console.error(error);
-                alert("Wystąpił błąd po stronie klienta lub sieci");
+                setSnackbar({ open: true, message: "Wystąpił błąd po stronie klienta lub sieci", severity: "error" });
             }
         }
     };
-
 
     return (
         <Box sx={{
@@ -185,8 +189,19 @@ const Register: React.FC = () => {
                     </Box>
                 </Paper>
             </Container>
-        </Box>
 
+            {/* Snackbar do prezentacji sukcesu lub błędu */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000} // zamknie się po 4 sekundach
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity as any}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Box>
     );
 };
 

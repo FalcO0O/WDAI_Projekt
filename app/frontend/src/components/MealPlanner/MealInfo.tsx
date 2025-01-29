@@ -5,12 +5,11 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
-import products from "./MealsDB/products.json";
 import ProductListModal from "./ProductListModal";
 import GramsModal from "./GramsModal";
 import { PORT } from "../../PORT";
@@ -36,17 +35,24 @@ interface MealInfoProps {
   onMealChange?: () => void; // callback do odświeżania w rodzicu
 }
 
-const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName, onMealChange }) => {
+const MealInfo: React.FC<MealInfoProps> = ({
+  currentDate,
+  mealName,
+  onMealChange,
+}) => {
   // ZAMIAST useState(() => ...), BĘDZIEMY KAŻDORAZOWO ODCZYTYWAĆ userID:
   // const [userID] = useState(() => {...})  -- usuń to
 
-  const [consumedProducts, setConsumedProducts] = useState<MealHistoryEntry[]>([]);
+  const [consumedProducts, setConsumedProducts] = useState<MealHistoryEntry[]>(
+    []
+  );
   const [openProductsModal, setOpenProductsModal] = useState(false);
   const [openGramsModal, setOpenGramsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [grams, setGrams] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<any[]>([]);
 
   // Format daty "YYYY-MM-DD"
   const formattedDate = currentDate.toISOString().split("T")[0];
@@ -66,13 +72,13 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName, onMealChange
       const token = localStorage.getItem("accessToken") || "";
       const response = await axios.get("/api/meals", {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         params: {
           userID,
           date: formattedDate,
-          mealName
-        }
+          mealName,
+        },
       });
       setConsumedProducts(response.data);
     } catch (err) {
@@ -80,9 +86,24 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName, onMealChange
     }
   };
 
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem("accessToken") || "";
+      const response = await axios.get("/api/products", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setProducts(response.data);
+    } catch (err) {
+      console.error("Błąd przy pobieraniu produktów:", err);
+    }
+  };
+
   // useEffect – wczytaj dane przy zmianie (currentDate, mealName)
   useEffect(() => {
     fetchMeals();
+    fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDate, mealName]);
 
@@ -120,15 +141,15 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName, onMealChange
       calories: ((grams / 100) * selectedProduct?.calories_per_100g).toFixed(2),
       proteins: ((grams / 100) * selectedProduct?.protein_per_100g).toFixed(2),
       carbs: ((grams / 100) * selectedProduct?.carbs_per_100g).toFixed(2),
-      fats: ((grams / 100) * selectedProduct?.fat_per_100g).toFixed(2)
+      fats: ((grams / 100) * selectedProduct?.fat_per_100g).toFixed(2),
     };
 
     try {
       const token = localStorage.getItem("accessToken") || "";
       await axios.post("/api/meals", record, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       // 1) Odśwież w tym komponencie
       handleCloseGramsModal();
@@ -149,8 +170,8 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName, onMealChange
       const token = localStorage.getItem("accessToken") || "";
       await axios.delete(`/api/meals/${product.id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       // 1) Odśwież w tym komponencie
       fetchMeals();
@@ -165,70 +186,81 @@ const MealInfo: React.FC<MealInfoProps> = ({ currentDate, mealName, onMealChange
   };
 
   return (
-      <Box
-          sx={{
-            width: "32vw",
-            padding: "10px",
-            backgroundColor: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-            marginBottom: "15px"
-          }}
-      >
-        {/* Nagłówek + przycisk dodawania */}
-        <List>
-          <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6">{mealName}</Typography>
-            <IconButton edge="end" color="success" onClick={handleOpenProductsModal}>
-              <AddIcon />
-            </IconButton>
-          </ListItem>
-        </List>
+    <Box
+      sx={{
+        width: "32vw",
+        padding: "10px",
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+        marginBottom: "15px",
+      }}
+    >
+      {/* Nagłówek + przycisk dodawania */}
+      <List>
+        <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="h6">{mealName}</Typography>
+          <IconButton
+            edge="end"
+            color="success"
+            onClick={handleOpenProductsModal}
+          >
+            <AddIcon />
+          </IconButton>
+        </ListItem>
+      </List>
 
-        {/* Lista spożytych produktów */}
-        <List>
-          {consumedProducts.length > 0 ? (
-              consumedProducts.map((product) => (
-                  <ListItem key={product.id} sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <ListItemText
-                        primary={`${product.productName} (${product.grams} g)`}
-                        secondary={`Kalorie: ${product.calories} kcal, Białko: ${product.proteins} g, Węglowodany: ${product.carbs} g, Tłuszcze: ${product.fats} g`}
-                    />
-                    <IconButton
-                        edge="end"
-                        color="error"
-                        onClick={() => handleRemoveProduct(product)}
-                    >
-                      <RemoveCircleIcon />
-                    </IconButton>
-                  </ListItem>
-              ))
-          ) : (
-              <Typography variant="body2" color="textSecondary" sx={{ paddingLeft: 2 }}>
-                Brak spożytych produktów dla tego posiłku
-              </Typography>
-          )}
-        </List>
+      {/* Lista spożytych produktów */}
+      <List>
+        {consumedProducts.length > 0 ? (
+          consumedProducts.map((product) => (
+            <ListItem
+              key={product.id}
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <ListItemText
+                primary={`${product.productName} (${product.grams} g)`}
+                secondary={`Kalorie: ${product.calories} kcal, Białko: ${product.proteins} g, Węglowodany: ${product.carbs} g, Tłuszcze: ${product.fats} g`}
+              />
+              <IconButton
+                edge="end"
+                color="error"
+                onClick={() => handleRemoveProduct(product)}
+              >
+                <RemoveCircleIcon />
+              </IconButton>
+            </ListItem>
+          ))
+        ) : (
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ paddingLeft: 2 }}
+          >
+            Brak spożytych produktów dla tego posiłku
+          </Typography>
+        )}
+      </List>
 
-        {/* Modale */}
-        <ProductListModal
-            open={openProductsModal}
-            onClose={handleCloseProductsModal}
-            products={products}
-            searchTerm={searchTerm}
-            onSearchChange={(e) => setSearchTerm(e.target.value)}
-            onSelectProduct={handleOpenGramsModal}
-        />
-        <GramsModal
-            open={openGramsModal}
-            product={selectedProduct}
-            grams={grams}
-            error={error}
-            onClose={handleCloseGramsModal}
-            onGramsChange={setGrams}
-            onSubmit={handleSubmitGrams}
-        />
-      </Box>
+      {/* Modale */}
+      <ProductListModal
+        open={openProductsModal}
+        onClose={handleCloseProductsModal}
+        products={products}
+        searchTerm={searchTerm}
+        onSearchChange={(e) => setSearchTerm(e.target.value)}
+        onSelectProduct={handleOpenGramsModal}
+      />
+      <GramsModal
+        open={openGramsModal}
+        product={selectedProduct}
+        grams={grams}
+        error={error}
+        onClose={handleCloseGramsModal}
+        onGramsChange={setGrams}
+        onSubmit={handleSubmitGrams}
+      />
+    </Box>
   );
 };
 

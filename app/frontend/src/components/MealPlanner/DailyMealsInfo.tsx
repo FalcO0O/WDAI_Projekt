@@ -29,7 +29,32 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
 }) => {
   const [mealsHistory, setMealsHistory] = useState<MealEntry[]>([]);
 
-  const [caloriesGoal, setCaloriesGoal] = useState("");
+  const [caloriesGoal, setCaloriesGoal] = useState<number | null>(null);
+
+  // 🔹 Pobieranie danych użytkownika po załadowaniu strony
+  const loadUserCaloriesGoal = async () => {
+    try {
+      const userID = localStorage.getItem("userID");
+      if (!userID) return;
+      const token = localStorage.getItem("accessToken");
+      console.log(token);
+      if (!token) return;
+
+      const response = await axios.get("/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          userID,
+        },
+      });
+      setCaloriesGoal(Number(response.data.profile.caloriesGoal));
+    } catch (error) {
+      console.error("Błąd pobierania profilu:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadUserCaloriesGoal();
+  }, []);
 
   // Formatowanie daty do wyświetlenia, np. "środa, 2 lutego 2025"
   const formattedDate = currentDate.toLocaleDateString("pl-PL", {
@@ -103,33 +128,6 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
     fetchAllMealsForDay();
   };
 
-  // Pobieranie celu kalorycznego
-  const loadUserCaloriesGoal = async () => {
-    try {
-      const userID = localStorage.getItem("userID");
-      console.log(userID);
-      if (!userID) return;
-      const token = localStorage.getItem("accessToken");
-      console.log(token);
-      if (!token) return;
-
-      const response = await axios.get("/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
-          userID,
-        },
-      });
-
-      setCaloriesGoal(response.data.profile.caloriesGoal);
-    } catch (error) {
-      console.error("Błąd pobierania profilu:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadUserCaloriesGoal();
-  }, []);
-
   // Definicje składników odżywczych i ich zakresów
   const nutrients: Array<keyof MealEntry> = [
     "calories",
@@ -140,20 +138,36 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
   const nutrientLabels = ["Kalorie", "Białko", "Węglowodany", "Tłuszcze"];
   const nutrientRanges: Record<string, { min: number; max: number }> = {
     calories: {
-      min: (1800 / 2000) * Number({ caloriesGoal }),
-      max: (2200 / 2000) * Number({ caloriesGoal }),
+      min: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 1800).toFixed(2))
+        : 1800,
+      max: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 2200).toFixed(2))
+        : 2200,
     },
     proteins: {
-      min: 45 * (Number(caloriesGoal) / 2000),
-      max: 60 * (Number(caloriesGoal) / 2000),
+      min: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 45).toFixed(2))
+        : 45,
+      max: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 60).toFixed(2))
+        : 60,
     },
     carbs: {
-      min: 225 * (Number(caloriesGoal) / 2000),
-      max: 300 * (Number(caloriesGoal) / 2000),
+      min: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 225).toFixed(2))
+        : 225,
+      max: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 300).toFixed(2))
+        : 300,
     },
     fats: {
-      min: 60 * (Number(caloriesGoal) / 2000),
-      max: 80 * (Number(caloriesGoal) / 2000),
+      min: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 60).toFixed(2))
+        : 60,
+      max: caloriesGoal
+        ? parseFloat(((caloriesGoal / 2000) * 80).toFixed(2))
+        : 80,
     },
   };
 

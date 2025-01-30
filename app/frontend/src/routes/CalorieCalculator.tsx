@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, Snackbar } from "@mui/material";
 import { useState, useEffect } from "react";
 import HomeBar from "../components/Common/HomeBar";
 import Footer from "../components/Common/Footer";
@@ -10,6 +10,8 @@ function CalorieCalculator() {
   const [user, setUser] = useState(null);
   const [caloriesGoal, setCaloriesGoal] = useState("");
   const [newCaloriesGoal, setNewCaloriesGoal] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // 🔹 Pobieranie danych użytkownika po załadowaniu strony
   const fetchUser = async () => {
@@ -52,11 +54,19 @@ function CalorieCalculator() {
 
       setCaloriesGoal(newCaloriesGoal); // Aktualizacja wartości w stanie
       setNewCaloriesGoal("");
-      alert("Cel kaloryczny został zapisany!");
+      // Pokaż powiadomienie o sukcesie
+      setSnackbarMessage("Cel kaloryczny został pomyślnie zaktualizowany.");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Błąd zapisu celu:", error);
-      alert("Wystąpił błąd podczas zapisywania celu.");
+      // Pokaż powiadomienie o błędzie
+      setSnackbarMessage("Wystąpił błąd podczas zapisywania celu.");
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -129,6 +139,15 @@ function CalorieCalculator() {
         </Box>
       </Box>
       <Footer />
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      />
     </Box>
   );
 }

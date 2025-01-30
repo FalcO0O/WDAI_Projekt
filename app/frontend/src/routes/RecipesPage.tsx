@@ -28,7 +28,7 @@ function RecipesPage() {
     >
       <HomeBar />
 
-      {userID !== 0 && (
+      {/* {userID !== 0 && (
         <Box
           sx={{
             position: "fixed",
@@ -47,7 +47,7 @@ function RecipesPage() {
             <AddCircleIcon fontSize="large" />
           </IconButton>
         </Box>
-      )}
+      )} */}
 
       <Box sx={{ overflowY: "auto" }}>
         <RecipesList />

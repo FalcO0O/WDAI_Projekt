@@ -1,0 +1,42 @@
+[
+  {
+    "firstName": "admin",
+    "lastName": "admin",
+    "email": "admin@mail.com",
+    "password": "haslo123",
+    "role": "admin",
+    "caloriesGoal": 2000
+  },
+  {
+    "firstName": "Tomasz",
+    "lastName": "Mol",
+    "email": "tomek@mail.com",
+    "password": "tomek123",
+    "role": "user",
+    "caloriesGoal": 2000
+  },
+  {
+    "firstName": "Bartosz",
+    "lastName": "Ludwin",
+    "email": "bartek@mail.com",
+    "password": "bartek123",
+    "role": "user",
+    "caloriesGoal": 2000
+  },
+  {
+    "firstName": "Dominik",
+    "lastName": "Kozimor",
+    "email": "dominik@mail.com",
+    "password": "dominik123",
+    "role": "user",
+    "caloriesGoal": 2000
+  },
+  {
+    "firstName": "Mateusz",
+    "lastName": "Jarosz",
+    "email": "jarosz@mail.com",
+    "password": "jarosz123",
+    "role": "user",
+    "caloriesGoal": 2000
+  }
+]

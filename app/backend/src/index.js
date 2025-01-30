@@ -26,37 +26,168 @@ const db = new sqlite3.Database(dbFile, async (err) => {
     process.exit(1);
   }
   console.log("Połączono z bazą SQLite.");
-  // Tabela "users" (bez admina)
-  db.run(
+
+  const RESET_USERS = true; // <= zmien na false, jeżeli nie chcesz resetować użytkowników
+  if (RESET_USERS) {
+    // Resetowanie tabeli users
+    db.serialize(() => {
+      db.run("DELETE FROM users", (err) => {
+        if (err) {
+          console.error("Błąd czyszczenia tabeli users:", err);
+        } else {
+          console.log("Tabela users została wyczyszczona.");
+          db.run("DELETE FROM sqlite_sequence WHERE name='users'", (err) => {
+            if (err) {
+              console.error("Błąd resetowania ID users:", err);
+            } else {
+              console.log("Autoinkrementacja ID users zresetowana.");
+            }
+          });
+        }
+      });
+    });
+
+    // Tworzenie tabeli "users"
+    db.run(
       `
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      firstName TEXT NOT NULL,
-      lastName TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'user',
-      caloriesGoal INTEGER NOT NULL DEFAULT '2000'
-    )
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    caloriesGoal INTEGER NOT NULL DEFAULT 2000
+  )
   `,
+      async (err) => {
+        if (err) {
+          console.error("Błąd tworzenia tabeli users:", err);
+          return;
+        }
+        console.log('Tabela "users" została utworzona.');
+
+        // Wczytanie danych z pliku JSON
+        const usersData = JSON.parse(
+          fs.readFileSync("./setupData/users.json", "utf-8")
+        );
+
+        // Sprawdzenie, czy tabela jest pusta
+        db.get("SELECT COUNT(*) AS count FROM users", async (err, row) => {
+          if (err) {
+            console.error("Błąd sprawdzania tabeli users:", err);
+            return;
+          }
+
+          if (row.count === 0) {
+            console.log("Tabela 'users' jest pusta. Wstawianie danych...");
+
+            const insertStmt = db.prepare(`
+          INSERT INTO users (firstName, lastName, email, password, role, caloriesGoal)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `);
+
+            try {
+              // Hashowanie haseł dla wszystkich użytkowników
+              const hashedUsersData = await Promise.all(
+                usersData.map(async (user) => ({
+                  ...user,
+                  password: await bcrypt.hash(user.password, 10), // Hashowanie hasła
+                }))
+              );
+
+              db.serialize(() => {
+                hashedUsersData.forEach((user, index) => {
+                  insertStmt.run(
+                    user.firstName,
+                    user.lastName,
+                    user.email,
+                    user.password, // Teraz już zahashowane hasło
+                    user.role || "user",
+                    user.caloriesGoal || 2000,
+                    (err) => {
+                      if (err) {
+                        console.error(
+                          `Błąd wstawiania użytkownika ${user.email}:`,
+                          err
+                        );
+                      }
+
+                      // Jeśli to ostatni użytkownik, pobierz wszystkie rekordy
+                      if (index === hashedUsersData.length - 1) {
+                        insertStmt.finalize(() => {
+                          console.log(
+                            "Dane zostały pomyślnie dodane do tabeli 'users'."
+                          );
+
+                          // Pobierz wszystkie rekordy z tabeli "users"
+                          db.all("SELECT * FROM users", [], (err, rows) => {
+                            if (err) {
+                              console.error("Błąd zapytania:", err.message);
+                            } else {
+                              console.log("Dane z tabeli users:", rows);
+                            }
+                          });
+                        });
+                      }
+                    }
+                  );
+                });
+              });
+            } catch (hashErr) {
+              console.error("Błąd hashowania haseł:", hashErr);
+            }
+          } else {
+            console.log(
+              "Tabela 'users' już zawiera dane. Pominięto wstawianie."
+            );
+
+            // Pobierz dane od razu, jeśli tabela nie była pusta
+            db.all("SELECT * FROM users", [], (err, rows) => {
+              if (err) {
+                console.error("Błąd zapytania:", err.message);
+              } else {
+                console.log("Dane z tabeli users:", rows);
+              }
+            });
+          }
+        });
+      }
+    );
+  } else {
+    // Tabela "users" (bez admina)
+    db.run(
+      `
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    caloriesGoal INTEGER NOT NULL DEFAULT '2000'
+  )
+`,
       (err) => {
         if (err) {
           console.error("Błąd tworzenia tabeli users:", err);
         } else {
-          console.log('Tabela "users" gotowa (lub już istniała).');
+          console.log(
+            'Tabela "users" już istniała (lub właśnie została zainicjowana jako pusta).'
+          );
         }
       }
-  );
+    );
 
-  // Pobierz wszystkie rekordy z tabeli "users"
-  db.all("SELECT * FROM users", [], (err, rows) => {
-    if (err) {
-      console.error("Błąd zapytania:", err.message);
-    } else {
-      console.log("Dane z tabeli users:", rows);
-    }
-
-  });
+    // Pobierz wszystkie rekordy z tabeli "users"
+    db.all("SELECT * FROM users", [], (err, rows) => {
+      if (err) {
+        console.error("Błąd zapytania:", err.message);
+      } else {
+        console.log("Dane z tabeli users:", rows);
+      }
+    });
+  }
 
   // try {
   //   // Dodajemy Admina
@@ -78,7 +209,7 @@ const db = new sqlite3.Database(dbFile, async (err) => {
 
   // Tabela "mealsHistory"
   db.run(
-      `
+    `
     CREATE TABLE IF NOT EXISTS mealsHistory (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       userID INTEGER NOT NULL,
@@ -92,18 +223,18 @@ const db = new sqlite3.Database(dbFile, async (err) => {
       fats REAL DEFAULT 0
     )
   `,
-      (err) => {
-        if (err) {
-          console.error("Błąd tworzenia tabeli mealsHistory:", err);
-        } else {
-          console.log('Tabela "mealsHistory" gotowa (lub już istniała).');
-        }
+    (err) => {
+      if (err) {
+        console.error("Błąd tworzenia tabeli mealsHistory:", err);
+      } else {
+        console.log('Tabela "mealsHistory" gotowa (lub już istniała).');
       }
+    }
   );
 
   // utworzenie tabeli produktów
   db.run(
-      `
+    `
     CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
@@ -114,74 +245,73 @@ const db = new sqlite3.Database(dbFile, async (err) => {
             average_weight_per_item_g REAL NULL
     )
     `,
-      (err) => {
-        if (err) {
-          console.error("Błąd tworzenia tabeli products:", err);
-        } else {
-          console.log(
-              'Tabela "products" została zainicjowana (lub już istniała).'
-          );
+    (err) => {
+      if (err) {
+        console.error("Błąd tworzenia tabeli products:", err);
+      } else {
+        console.log(
+          'Tabela "products" została zainicjowana (lub już istniała).'
+        );
 
-          // Wczytanie danych z pliku JSON
-          const productsData = JSON.parse(
-              fs.readFileSync("./setupData/products.json", "utf-8")
-          );
+        // Wczytanie danych z pliku JSON
+        const productsData = JSON.parse(
+          fs.readFileSync("./setupData/products.json", "utf-8")
+        );
 
-          // Sprawdzenie, czy tabela products jest pusta
-          db.get("SELECT COUNT(*) AS count FROM products", (err, row) => {
-            if (err) {
-              console.error("Błąd sprawdzania tabeli products:", err);
-              return;
-            }
+        // Sprawdzenie, czy tabela products jest pusta
+        db.get("SELECT COUNT(*) AS count FROM products", (err, row) => {
+          if (err) {
+            console.error("Błąd sprawdzania tabeli products:", err);
+            return;
+          }
 
-            if (row.count === 0) {
-              console.log("Tabela 'products' jest pusta. Wstawianie danych...");
+          if (row.count === 0) {
+            console.log("Tabela 'products' jest pusta. Wstawianie danych...");
 
-              const insertStmt = db.prepare(`
+            const insertStmt = db.prepare(`
                 INSERT INTO products (name, calories_per_100g, protein_per_100g, fat_per_100g, carbs_per_100g, average_weight_per_item_g)
                 VALUES (?, ?, ?, ?, ?, ?)
             `);
 
-              db.serialize(() => {
-                productsData.forEach((product, index) => {
-                  insertStmt.run(
-                      product.name,
-                      product.calories_per_100g,
-                      product.protein_per_100g,
-                      product.fat_per_100g,
-                      product.carbs_per_100g,
-                      product.average_weight_per_item_g || null,
-                      (err) => {
-                        if (err) {
-                          console.error(
-                              `Błąd wstawiania produktu ${product.name}:`,
-                              err
-                          );
-                        } else if (index === productsData.length - 1) {
-                          console.log(
-                              "Dane zostały pomyślnie dodane do tabeli 'products'."
-                          );
-                        }
-                      }
-                  );
-                });
-
-                insertStmt.finalize();
+            db.serialize(() => {
+              productsData.forEach((product, index) => {
+                insertStmt.run(
+                  product.name,
+                  product.calories_per_100g,
+                  product.protein_per_100g,
+                  product.fat_per_100g,
+                  product.carbs_per_100g,
+                  product.average_weight_per_item_g || null,
+                  (err) => {
+                    if (err) {
+                      console.error(
+                        `Błąd wstawiania produktu ${product.name}:`,
+                        err
+                      );
+                    } else if (index === productsData.length - 1) {
+                      console.log(
+                        "Dane zostały pomyślnie dodane do tabeli 'products'."
+                      );
+                    }
+                  }
+                );
               });
-            } else {
-              console.log(
-                  "Tabela 'products' już zawiera dane. Pominięto wstawianie."
-              );
-            }
-          });
-        }
+
+              insertStmt.finalize();
+            });
+          } else {
+            console.log(
+              "Tabela 'products' już zawiera dane. Pominięto wstawianie."
+            );
+          }
+        });
       }
+    }
   );
 
-
-// utworzenie tabeli przepisów
-db.run(
-  `
+  // utworzenie tabeli przepisów
+  db.run(
+    `
   CREATE TABLE IF NOT EXISTS recipes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           description TEXT NOT NULL,
@@ -196,75 +326,75 @@ db.run(
               REFERENCES users (id) 
   )
   `,
-  (err) => {
-    if (err) {
-      console.error("Błąd tworzenia tabeli recipes:", err);
-    } else {
-      console.log(
-        'Tabela "recipes" została zainicjowana (lub już istniała).'
-      );
+    (err) => {
+      if (err) {
+        console.error("Błąd tworzenia tabeli recipes:", err);
+      } else {
+        console.log(
+          'Tabela "recipes" została zainicjowana (lub już istniała).'
+        );
 
-      // Wczytanie danych z pliku JSON
-      const recipesData = JSON.parse(
-        fs.readFileSync("./setupData/recipes.json", "utf-8")
-      );
+        // Wczytanie danych z pliku JSON
+        const recipesData = JSON.parse(
+          fs.readFileSync("./setupData/recipes.json", "utf-8")
+        );
 
-      // Sprawdzenie, czy tabela recipes jest pusta
-      db.get("SELECT COUNT(*) AS count FROM recipes", (err, row) => {
-        if (err) {
-          console.error("Błąd sprawdzania tabeli recipes:", err);
-          return;
-        }
+        // Sprawdzenie, czy tabela recipes jest pusta
+        db.get("SELECT COUNT(*) AS count FROM recipes", (err, row) => {
+          if (err) {
+            console.error("Błąd sprawdzania tabeli recipes:", err);
+            return;
+          }
 
-        if (row.count === 0) {
-          console.log("Tabela 'recipes' jest pusta. Wstawianie danych...");
+          if (row.count === 0) {
+            console.log("Tabela 'recipes' jest pusta. Wstawianie danych...");
 
-          const insertStmt = db.prepare(`
+            const insertStmt = db.prepare(`
               INSERT INTO recipes (description, preparation, grams, calories, proteins, carbohydrates, fats, userID)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           `);
 
-          db.serialize(() => {
-            recipesData.forEach((recipe, index) => {
-              insertStmt.run(
-                recipe.description,
-                recipe.preparation,
-                recipe.grams,
-                recipe.calories,
-                recipe.proteins,
-                recipe.carbohydrates,
-                recipe.fats,
-                recipe.userID || null,
-                (err) => {
-                  if (err) {
-                    console.error(
-                      `Błąd wstawiania produktu ${recipe.name}:`,
-                      err
-                    );
-                  } else if (index === recipesData.length - 1) {
-                    console.log(
-                      "Dane zostały pomyślnie dodane do tabeli 'recipes'."
-                    );
+            db.serialize(() => {
+              recipesData.forEach((recipe, index) => {
+                insertStmt.run(
+                  recipe.description,
+                  recipe.preparation,
+                  recipe.grams,
+                  recipe.calories,
+                  recipe.proteins,
+                  recipe.carbohydrates,
+                  recipe.fats,
+                  recipe.userID || null,
+                  (err) => {
+                    if (err) {
+                      console.error(
+                        `Błąd wstawiania produktu ${recipe.name}:`,
+                        err
+                      );
+                    } else if (index === recipesData.length - 1) {
+                      console.log(
+                        "Dane zostały pomyślnie dodane do tabeli 'recipes'."
+                      );
+                    }
                   }
-                }
-              );
+                );
+              });
+
+              insertStmt.finalize();
             });
-
-            insertStmt.finalize();
-          });
-        } else {
-          console.log(
-            "Tabela 'recipes' już zawiera dane. Pominięto wstawianie."
-          );
-        }
-      });
+          } else {
+            console.log(
+              "Tabela 'recipes' już zawiera dane. Pominięto wstawianie."
+            );
+          }
+        });
+      }
     }
-  }
-);
+  );
 
-// utworzenie tabeli recipesIngredients
-db.run(
-  `
+  // utworzenie tabeli recipesIngredients
+  db.run(
+    `
   CREATE TABLE IF NOT EXISTS recipesIngredients (
           recipeID INTEGER,
           productID INTEGER,
@@ -276,70 +406,75 @@ db.run(
               REFERENCES products (id) 
   )
   `,
-  (err) => {
-    if (err) {
-      console.error("Błąd tworzenia tabeli recipesIngredients:", err);
-    } else {
-      console.log(
-        'Tabela "recipesIngredients" została zainicjowana (lub już istniała).'
-      );
+    (err) => {
+      if (err) {
+        console.error("Błąd tworzenia tabeli recipesIngredients:", err);
+      } else {
+        console.log(
+          'Tabela "recipesIngredients" została zainicjowana (lub już istniała).'
+        );
 
-      // Wczytanie danych z pliku JSON
-      const recipesIngredientsData = JSON.parse(
-        fs.readFileSync("./setupData/recipesIngredients.json", "utf-8")
-      );
+        // Wczytanie danych z pliku JSON
+        const recipesIngredientsData = JSON.parse(
+          fs.readFileSync("./setupData/recipesIngredients.json", "utf-8")
+        );
 
-      // Sprawdzenie, czy recipesIngredients jest pusta
-      db.get("SELECT COUNT(*) AS count FROM recipesIngredients", (err, row) => {
-        if (err) {
-          console.error("Błąd sprawdzania tabeli recipesIngredients:", err);
-          return;
-        }
+        // Sprawdzenie, czy recipesIngredients jest pusta
+        db.get(
+          "SELECT COUNT(*) AS count FROM recipesIngredients",
+          (err, row) => {
+            if (err) {
+              console.error("Błąd sprawdzania tabeli recipesIngredients:", err);
+              return;
+            }
 
-        if (row.count === 0) {
-          console.log("Tabela 'recipesIngredients' jest pusta. Wstawianie danych...");
+            if (row.count === 0) {
+              console.log(
+                "Tabela 'recipesIngredients' jest pusta. Wstawianie danych..."
+              );
 
-          const insertStmt = db.prepare(`
+              const insertStmt = db.prepare(`
               INSERT INTO recipesIngredients (recipeID, productID, grams)
               VALUES (?, ?, ?)
           `);
 
-          db.serialize(() => {
-            recipesIngredientsData.forEach((recipesIngredient, index) => {
-              insertStmt.run(
-                recipesIngredient.recipeID,
-                recipesIngredient.productID,
-                recipesIngredient.grams,
-                (err) => {
-                  if (err) {
-                    console.error(
-                      `Błąd wstawiania składniku przepisu ${recipesIngredient}:`,
-                      err
-                    );
-                  } else if (index === recipesIngredientsData.length - 1) {
-                    console.log(
-                      "Dane zostały pomyślnie dodane do tabeli 'recipesIngredients'."
-                    );
-                  }
-                }
+              db.serialize(() => {
+                recipesIngredientsData.forEach((recipesIngredient, index) => {
+                  insertStmt.run(
+                    recipesIngredient.recipeID,
+                    recipesIngredient.productID,
+                    recipesIngredient.grams,
+                    (err) => {
+                      if (err) {
+                        console.error(
+                          `Błąd wstawiania składniku przepisu ${recipesIngredient}:`,
+                          err
+                        );
+                      } else if (index === recipesIngredientsData.length - 1) {
+                        console.log(
+                          "Dane zostały pomyślnie dodane do tabeli 'recipesIngredients'."
+                        );
+                      }
+                    }
+                  );
+                });
+
+                insertStmt.finalize();
+              });
+            } else {
+              console.log(
+                "Tabela 'recipesIngredients' już zawiera dane. Pominięto wstawianie."
               );
-            });
-
-            insertStmt.finalize();
-          });
-        } else {
-          console.log(
-            "Tabela 'recipesIngredients' już zawiera dane. Pominięto wstawianie."
-          );
-        }
-      });
+            }
+          }
+        );
+      }
     }
-  }
-);
+  );
 
-// utworzenie tabeli recipesOpinions
-db.run(
-  `
+  // utworzenie tabeli recipesOpinions
+  db.run(
+    `
   CREATE TABLE IF NOT EXISTS recipesOpinions (
           recipeID INTEGER,
           userID INTEGER,
@@ -351,67 +486,68 @@ db.run(
               REFERENCES users (id) 
   )
   `,
-  (err) => {
-    if (err) {
-      console.error("Błąd tworzenia tabeli recipesOpinions:", err);
-    } else {
-      console.log(
-        'Tabela "recipesOpinions" została zainicjowana (lub już istniała).'
-      );
+    (err) => {
+      if (err) {
+        console.error("Błąd tworzenia tabeli recipesOpinions:", err);
+      } else {
+        console.log(
+          'Tabela "recipesOpinions" została zainicjowana (lub już istniała).'
+        );
 
-      // Wczytanie danych z pliku JSON
-      const recipesOpinionsData = JSON.parse(
-        fs.readFileSync("./setupData/recipesOpinions.json", "utf-8")
-      );
+        // Wczytanie danych z pliku JSON
+        const recipesOpinionsData = JSON.parse(
+          fs.readFileSync("./setupData/recipesOpinions.json", "utf-8")
+        );
 
-      // Sprawdzenie, czy recipesOpinions jest pusta
-      db.get("SELECT COUNT(*) AS count FROM recipesOpinions", (err, row) => {
-        if (err) {
-          console.error("Błąd sprawdzania tabeli recipesOpinions:", err);
-          return;
-        }
+        // Sprawdzenie, czy recipesOpinions jest pusta
+        db.get("SELECT COUNT(*) AS count FROM recipesOpinions", (err, row) => {
+          if (err) {
+            console.error("Błąd sprawdzania tabeli recipesOpinions:", err);
+            return;
+          }
 
-        if (row.count === 0) {
-          console.log("Tabela 'recipesOpinions' jest pusta. Wstawianie danych...");
+          if (row.count === 0) {
+            console.log(
+              "Tabela 'recipesOpinions' jest pusta. Wstawianie danych..."
+            );
 
-          const insertStmt = db.prepare(`
+            const insertStmt = db.prepare(`
               INSERT INTO recipesOpinions (recipeID, userID, opinion)
               VALUES (?, ?, ?)
           `);
 
-          db.serialize(() => {
-            recipesOpinionsData.forEach((recipesOpinion, index) => {
-              insertStmt.run(
-                recipesOpinion.recipeID,
-                recipesOpinion.userID,
-                recipesOpinion.opinion,
-                (err) => {
-                  if (err) {
-                    console.error(
-                      `Błąd wstawiania opinii o przepisie ${recipesOpinion}:`,
-                      err
-                    );
-                  } else if (index === recipesOpinionsData.length - 1) {
-                    console.log(
-                      "Dane zostały pomyślnie dodane do tabeli 'recipesOpinions'."
-                    );
+            db.serialize(() => {
+              recipesOpinionsData.forEach((recipesOpinion, index) => {
+                insertStmt.run(
+                  recipesOpinion.recipeID,
+                  recipesOpinion.userID,
+                  recipesOpinion.opinion,
+                  (err) => {
+                    if (err) {
+                      console.error(
+                        `Błąd wstawiania opinii o przepisie ${recipesOpinion}:`,
+                        err
+                      );
+                    } else if (index === recipesOpinionsData.length - 1) {
+                      console.log(
+                        "Dane zostały pomyślnie dodane do tabeli 'recipesOpinions'."
+                      );
+                    }
                   }
-                }
-              );
+                );
+              });
+
+              insertStmt.finalize();
             });
-
-            insertStmt.finalize();
-          });
-        } else {
-          console.log(
-            "Tabela 'recipesOpinions' już zawiera dane. Pominięto wstawianie."
-          );
-        }
-      });
+          } else {
+            console.log(
+              "Tabela 'recipesOpinions' już zawiera dane. Pominięto wstawianie."
+            );
+          }
+        });
+      }
     }
-  }
-);
-
+  );
 });
 
 // ================== TABLICA NA REFRESH TOKENY (tylko demo) ==================
@@ -419,11 +555,15 @@ let refreshTokens = [];
 
 // ================== FUNKCJE POMOCNICZE (JWT) ===================
 const generateAccessToken = (userId, role) => {
-  return jwt.sign({ userId, role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+  return jwt.sign({ userId, role }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "15m",
+  });
 };
 
 const generateRefreshToken = (userId, role) => {
-  return jwt.sign({ userId, role }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ userId, role }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 // Middleware: sprawdzanie poprawności tokenu
@@ -531,7 +671,7 @@ app.post("/login", (req, res) => {
         userId: user.id,
         accessToken,
         refreshToken,
-        role: user.role // Dodaj pole z rolą
+        role: user.role, // Dodaj pole z rolą
       });
     } catch (compareErr) {
       console.error(compareErr);
@@ -585,25 +725,23 @@ app.get("/profile", authenticateToken, (req, res) => {
   );
 });
 
-
 // Dodaj nowy middleware do sprawdzania roli
 const verifyAdmin = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
+  const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) return res.sendStatus(401);
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
-    if (user.role !== 'admin') return res.sendStatus(403);
+    if (user.role !== "admin") return res.sendStatus(403);
     req.user = user;
     next();
   });
 };
 
 // Użyj middleware dla endpointów admina
-app.get('/admin/data', verifyAdmin, (req, res) => {
+app.get("/admin/data", verifyAdmin, (req, res) => {
   // Logika specyficzna dla admina
 });
-
 
 // ======================== ENDPOINTY POSIŁKÓW ========================
 
@@ -832,12 +970,16 @@ app.get("/api/recipes", authenticateToken, (req, res) => {
 
   // Walidacja minimalna
   if (!userID) {
-    return res.status(400).json({ message: "Brak wymaganego parametru: userID" });
+    return res
+      .status(400)
+      .json({ message: "Brak wymaganego parametru: userID" });
   }
 
   // Upewniamy się, że user może pobrać TYLKO swoje dane
   if (parseInt(userID) !== req.user.userId) {
-    return res.status(403).json({ message: "Brak uprawnień do przeglądania cudzych przepisów" });
+    return res
+      .status(403)
+      .json({ message: "Brak uprawnień do przeglądania cudzych przepisów" });
   }
 
   const sql = `
@@ -850,7 +992,9 @@ app.get("/api/recipes", authenticateToken, (req, res) => {
   db.all(sql, [userID], (err, rows) => {
     if (err) {
       console.error("Błąd pobierania przepisów:", err);
-      return res.status(500).json({ message: "Błąd podczas pobierania przepisów" });
+      return res
+        .status(500)
+        .json({ message: "Błąd podczas pobierania przepisów" });
     }
     res.json(rows);
   });
@@ -865,7 +1009,9 @@ app.get("/recipes/:id_użytkownika", authenticateToken, (req, res) => {
 
   // Upewniamy się, że użytkownik może pobrać TYLKO swoje przepisy
   if (parseInt(id_użytkownika) !== req.user.userId) {
-    return res.status(403).json({ message: "Brak uprawnień do przeglądania cudzych przepisów" });
+    return res
+      .status(403)
+      .json({ message: "Brak uprawnień do przeglądania cudzych przepisów" });
   }
 
   const sql = `
@@ -878,7 +1024,9 @@ app.get("/recipes/:id_użytkownika", authenticateToken, (req, res) => {
   db.all(sql, [id_użytkownika], (err, rows) => {
     if (err) {
       console.error("Błąd pobierania przepisów:", err);
-      return res.status(500).json({ message: "Błąd podczas pobierania przepisów" });
+      return res
+        .status(500)
+        .json({ message: "Błąd podczas pobierania przepisów" });
     }
     res.json(rows);
   });
@@ -899,14 +1047,13 @@ app.get("/recipes", authenticateToken, (req, res) => {
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error("Błąd pobierania wspólnych przepisów:", err);
-      return res.status(500).json({ message: "Błąd podczas pobierania wspólnych przepisów" });
+      return res
+        .status(500)
+        .json({ message: "Błąd podczas pobierania wspólnych przepisów" });
     }
     res.json(rows);
   });
 });
-
-
-
 
 /**
  * POST /api/recipes
@@ -923,11 +1070,22 @@ app.get("/recipes", authenticateToken, (req, res) => {
  * }
  */
 app.post("/api/recipes", authenticateToken, (req, res) => {
-  const { description, preparation, grams, calories, proteins, carbohydrates, fats, userID } = req.body;
+  const {
+    description,
+    preparation,
+    grams,
+    calories,
+    proteins,
+    carbohydrates,
+    fats,
+    userID,
+  } = req.body;
 
   // Upewnijmy się, że userID = req.user.userId
   if (userID !== req.user.userId) {
-    return res.status(403).json({ message: "Brak uprawnień do dodawania przepisów innym użytkownikom" });
+    return res.status(403).json({
+      message: "Brak uprawnień do dodawania przepisów innym użytkownikom",
+    });
   }
 
   const sql = `
@@ -936,18 +1094,32 @@ app.post("/api/recipes", authenticateToken, (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  db.run(sql, [description, preparation, grams, calories, proteins, carbohydrates, fats, userID], function (err) {
-    if (err) {
-      console.error("Błąd dodawania przepisu:", err);
-      return res.status(500).json({ message: "Błąd podczas dodawania przepisu" });
+  db.run(
+    sql,
+    [
+      description,
+      preparation,
+      grams,
+      calories,
+      proteins,
+      carbohydrates,
+      fats,
+      userID,
+    ],
+    function (err) {
+      if (err) {
+        console.error("Błąd dodawania przepisu:", err);
+        return res
+          .status(500)
+          .json({ message: "Błąd podczas dodawania przepisu" });
+      }
+      return res.status(201).json({
+        message: "Przepis dodany pomyślnie",
+        recipeID: this.lastID,
+      });
     }
-    return res.status(201).json({
-      message: "Przepis dodany pomyślnie",
-      recipeID: this.lastID,
-    });
-  });
+  );
 });
-
 
 /**
  * DELETE /api/recipes/:id
@@ -960,23 +1132,35 @@ app.delete("/api/recipes/:id", authenticateToken, (req, res) => {
   db.get("SELECT userID FROM recipes WHERE id = ?", [recipeId], (err, row) => {
     if (err) {
       console.error("Błąd wyszukiwania przepisu:", err);
-      return res.status(500).json({ message: "Błąd bazy przy usuwaniu przepisu" });
+      return res
+        .status(500)
+        .json({ message: "Błąd bazy przy usuwaniu przepisu" });
     }
     if (!row) {
-      return res.status(404).json({ message: "Nie znaleziono przepisu o podanym ID" });
+      return res
+        .status(404)
+        .json({ message: "Nie znaleziono przepisu o podanym ID" });
     }
     if (row.userID !== req.user.userId) {
-      return res.status(403).json({ message: "Brak uprawnień do usuwania cudzego przepisu" });
+      return res
+        .status(403)
+        .json({ message: "Brak uprawnień do usuwania cudzego przepisu" });
     }
 
     // Skoro userID się zgadza, to usuwamy:
-    db.run("DELETE FROM recipes WHERE id = ?", [recipeId], function (deleteErr) {
-      if (deleteErr) {
-        console.error("Błąd usuwania przepisu:", deleteErr);
-        return res.status(500).json({ message: "Błąd bazy przy usuwaniu przepisu" });
+    db.run(
+      "DELETE FROM recipes WHERE id = ?",
+      [recipeId],
+      function (deleteErr) {
+        if (deleteErr) {
+          console.error("Błąd usuwania przepisu:", deleteErr);
+          return res
+            .status(500)
+            .json({ message: "Błąd bazy przy usuwaniu przepisu" });
+        }
+        return res.json({ message: "Przepis usunięty pomyślnie" });
       }
-      return res.json({ message: "Przepis usunięty pomyślnie" });
-    });
+    );
   });
 });
 
@@ -989,74 +1173,106 @@ app.delete("/api/recipes/:id", authenticateToken, (req, res) => {
  *   "grams": 100
  * }
  */
-app.post("/api/recipes/:id_przepisu/:id_produktu", authenticateToken, (req, res) => {
-  const { id_przepisu, id_produktu } = req.params;
-  const { grams } = req.body;
+app.post(
+  "/api/recipes/:id_przepisu/:id_produktu",
+  authenticateToken,
+  (req, res) => {
+    const { id_przepisu, id_produktu } = req.params;
+    const { grams } = req.body;
 
-  // Sprawdź, czy przepis należy do zalogowanego użytkownika
-  db.get("SELECT userID FROM recipes WHERE id = ?", [id_przepisu], (err, row) => {
-    if (err) {
-      console.error("Błąd wyszukiwania przepisu:", err);
-      return res.status(500).json({ message: "Błąd bazy przy dodawaniu składnika" });
-    }
-    if (!row) {
-      return res.status(404).json({ message: "Nie znaleziono przepisu o podanym ID" });
-    }
-    if (row.userID !== req.user.userId) {
-      return res.status(403).json({ message: "Brak uprawnień do modyfikowania cudzego przepisu" });
-    }
+    // Sprawdź, czy przepis należy do zalogowanego użytkownika
+    db.get(
+      "SELECT userID FROM recipes WHERE id = ?",
+      [id_przepisu],
+      (err, row) => {
+        if (err) {
+          console.error("Błąd wyszukiwania przepisu:", err);
+          return res
+            .status(500)
+            .json({ message: "Błąd bazy przy dodawaniu składnika" });
+        }
+        if (!row) {
+          return res
+            .status(404)
+            .json({ message: "Nie znaleziono przepisu o podanym ID" });
+        }
+        if (row.userID !== req.user.userId) {
+          return res.status(403).json({
+            message: "Brak uprawnień do modyfikowania cudzego przepisu",
+          });
+        }
 
-    // Dodaj składnik
-    const sql = `
+        // Dodaj składnik
+        const sql = `
       INSERT INTO recipesIngredients 
       (recipeID, productID, grams)
       VALUES (?, ?, ?)
     `;
 
-    db.run(sql, [id_przepisu, id_produktu, grams], function (err) {
-      if (err) {
-        console.error("Błąd dodawania składnika:", err);
-        return res.status(500).json({ message: "Błąd podczas dodawania składnika" });
+        db.run(sql, [id_przepisu, id_produktu, grams], function (err) {
+          if (err) {
+            console.error("Błąd dodawania składnika:", err);
+            return res
+              .status(500)
+              .json({ message: "Błąd podczas dodawania składnika" });
+          }
+          return res.status(201).json({ message: "Składnik dodany pomyślnie" });
+        });
       }
-      return res.status(201).json({ message: "Składnik dodany pomyślnie" });
-    });
-  });
-});
+    );
+  }
+);
 
 /**
  * DELETE /api/recipes/:id_przepisu/:id_produktu
  * Usuwa składnik z przepisu.
  */
-app.delete("/api/recipes/:id_przepisu/:id_produktu", authenticateToken, (req, res) => {
-  const { id_przepisu, id_produktu } = req.params;
+app.delete(
+  "/api/recipes/:id_przepisu/:id_produktu",
+  authenticateToken,
+  (req, res) => {
+    const { id_przepisu, id_produktu } = req.params;
 
-  // Sprawdź, czy przepis należy do zalogowanego użytkownika
-  db.get("SELECT userID FROM recipes WHERE id = ?", [id_przepisu], (err, row) => {
-    if (err) {
-      console.error("Błąd wyszukiwania przepisu:", err);
-      return res.status(500).json({ message: "Błąd bazy przy usuwaniu składnika" });
-    }
-    if (!row) {
-      return res.status(404).json({ message: "Nie znaleziono przepisu o podanym ID" });
-    }
-    if (row.userID !== req.user.userId) {
-      return res.status(403).json({ message: "Brak uprawnień do modyfikowania cudzego przepisu" });
-    }
-
-    // Usuń składnik
-    db.run(
-      "DELETE FROM recipesIngredients WHERE recipeID = ? AND productID = ?",
-      [id_przepisu, id_produktu],
-      function (deleteErr) {
-        if (deleteErr) {
-          console.error("Błąd usuwania składnika:", deleteErr);
-          return res.status(500).json({ message: "Błąd bazy przy usuwaniu składnika" });
+    // Sprawdź, czy przepis należy do zalogowanego użytkownika
+    db.get(
+      "SELECT userID FROM recipes WHERE id = ?",
+      [id_przepisu],
+      (err, row) => {
+        if (err) {
+          console.error("Błąd wyszukiwania przepisu:", err);
+          return res
+            .status(500)
+            .json({ message: "Błąd bazy przy usuwaniu składnika" });
         }
-        return res.json({ message: "Składnik usunięty pomyślnie" });
+        if (!row) {
+          return res
+            .status(404)
+            .json({ message: "Nie znaleziono przepisu o podanym ID" });
+        }
+        if (row.userID !== req.user.userId) {
+          return res.status(403).json({
+            message: "Brak uprawnień do modyfikowania cudzego przepisu",
+          });
+        }
+
+        // Usuń składnik
+        db.run(
+          "DELETE FROM recipesIngredients WHERE recipeID = ? AND productID = ?",
+          [id_przepisu, id_produktu],
+          function (deleteErr) {
+            if (deleteErr) {
+              console.error("Błąd usuwania składnika:", deleteErr);
+              return res
+                .status(500)
+                .json({ message: "Błąd bazy przy usuwaniu składnika" });
+            }
+            return res.json({ message: "Składnik usunięty pomyślnie" });
+          }
+        );
       }
     );
-  });
-});
+  }
+);
 
 // ====================== OPINIE O PRZEPISACH ======================
 
@@ -1071,10 +1287,14 @@ app.get("/recipe/opinions/:id_przepisu", authenticateToken, (req, res) => {
   db.get("SELECT id FROM recipes WHERE id = ?", [id_przepisu], (err, row) => {
     if (err) {
       console.error("Błąd wyszukiwania przepisu:", err);
-      return res.status(500).json({ message: "Błąd bazy przy pobieraniu opinii" });
+      return res
+        .status(500)
+        .json({ message: "Błąd bazy przy pobieraniu opinii" });
     }
     if (!row) {
-      return res.status(404).json({ message: "Nie znaleziono przepisu o podanym ID" });
+      return res
+        .status(404)
+        .json({ message: "Nie znaleziono przepisu o podanym ID" });
     }
 
     // Pobierz opinie
@@ -1088,7 +1308,9 @@ app.get("/recipe/opinions/:id_przepisu", authenticateToken, (req, res) => {
     db.all(sql, [id_przepisu], (err, rows) => {
       if (err) {
         console.error("Błąd pobierania opinii:", err);
-        return res.status(500).json({ message: "Błąd podczas pobierania opinii" });
+        return res
+          .status(500)
+          .json({ message: "Błąd podczas pobierania opinii" });
       }
       res.json(rows);
     });
@@ -1103,18 +1325,22 @@ app.get("/recipe/opinions/:id_przepisu", authenticateToken, (req, res) => {
  * }
  */
 app.post("/recipe/opinions/:id_przepisu", authenticateToken, (req, res) => {
-  const {id_przepisu} = req.params;
-  const {opinion} = req.body;
+  const { id_przepisu } = req.params;
+  const { opinion } = req.body;
   const userID = req.user.userId;
 
   // Sprawdź, czy przepis istnieje
   db.get("SELECT id FROM recipes WHERE id = ?", [id_przepisu], (err, row) => {
     if (err) {
       console.error("Błąd wyszukiwania przepisu:", err);
-      return res.status(500).json({message: "Błąd bazy przy dodawaniu opinii"});
+      return res
+        .status(500)
+        .json({ message: "Błąd bazy przy dodawaniu opinii" });
     }
     if (!row) {
-      return res.status(404).json({message: "Nie znaleziono przepisu o podanym ID"});
+      return res
+        .status(404)
+        .json({ message: "Nie znaleziono przepisu o podanym ID" });
     }
 
     // Dodaj opinię
@@ -1127,48 +1353,49 @@ app.post("/recipe/opinions/:id_przepisu", authenticateToken, (req, res) => {
     db.run(sql, [id_przepisu, userID, opinion], function (err) {
       if (err) {
         console.error("Błąd dodawania opinii:", err);
-        return res.status(500).json({message: "Błąd podczas dodawania opinii"});
+        return res
+          .status(500)
+          .json({ message: "Błąd podczas dodawania opinii" });
       }
-      return res.status(201).json({message: "Opinia dodana pomyślnie"});
+      return res.status(201).json({ message: "Opinia dodana pomyślnie" });
     });
   });
 });
 
 // ======================= ADMIN PAGE ==================================
 
-
 // PUT - Aktualizacja opinii
-app.put('/recipe/opinions/:id_opinii', authenticateToken, (req, res) => {
+app.put("/recipe/opinions/:id_opinii", authenticateToken, (req, res) => {
   const { id_opinii } = req.params;
   const { opinion } = req.body;
 
   db.run(
-      'UPDATE recipesOpinions SET opinion = ? WHERE id = ?',
-      [opinion, id_opinii],
-      function(err) {
-        if (err) {
-          console.error('Błąd aktualizacji opinii:', err);
-          return res.status(500).json({ message: 'Błąd aktualizacji opinii' });
-        }
-        res.json({ message: 'Opinia zaktualizowana pomyślnie' });
+    "UPDATE recipesOpinions SET opinion = ? WHERE id = ?",
+    [opinion, id_opinii],
+    function (err) {
+      if (err) {
+        console.error("Błąd aktualizacji opinii:", err);
+        return res.status(500).json({ message: "Błąd aktualizacji opinii" });
       }
+      res.json({ message: "Opinia zaktualizowana pomyślnie" });
+    }
   );
 });
 
 // DELETE - Usuwanie opinii
-app.delete('/recipe/opinions/:id_opinii', authenticateToken, (req, res) => {
+app.delete("/recipe/opinions/:id_opinii", authenticateToken, (req, res) => {
   const { id_opinii } = req.params;
 
   db.run(
-      'DELETE FROM recipesOpinions WHERE id = ?',
-      [id_opinii],
-      function(err) {
-        if (err) {
-          console.error('Błąd usuwania opinii:', err);
-          return res.status(500).json({ message: 'Błąd usuwania opinii' });
-        }
-        res.json({ message: 'Opinia usunięta pomyślnie' });
+    "DELETE FROM recipesOpinions WHERE id = ?",
+    [id_opinii],
+    function (err) {
+      if (err) {
+        console.error("Błąd usuwania opinii:", err);
+        return res.status(500).json({ message: "Błąd usuwania opinii" });
       }
+      res.json({ message: "Opinia usunięta pomyślnie" });
+    }
   );
 });
 
@@ -1176,5 +1403,4 @@ app.delete('/recipe/opinions/:id_opinii', authenticateToken, (req, res) => {
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Serwer działa na porcie ${PORT}`);
-
 });

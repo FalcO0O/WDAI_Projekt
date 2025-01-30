@@ -36,7 +36,7 @@ function RecipesPage() {
             zIndex: 1000, // Zapewnia, że przycisk będzie na wierzchu
           }}
         >
-          <IconButton
+          {/* <IconButton
             sx={{
               backgroundColor: "white",
               boxShadow: 2,
@@ -45,7 +45,7 @@ function RecipesPage() {
             }}
           >
             <AddCircleIcon fontSize="large" />
-          </IconButton>
+          </IconButton> */}
         </Box>
       )}
 

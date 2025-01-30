@@ -72,7 +72,7 @@ const RecipeDetails: React.FC = () => {
           <ArrowBackIcon fontSize="large" />
         </IconButton>
 
-        {userID !== 0 && (
+        {/* {userID !== 0 && (
           <IconButton
             sx={{
               backgroundColor: "white",
@@ -84,7 +84,7 @@ const RecipeDetails: React.FC = () => {
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>
-        )}
+        )} */}
       </Box>
 
       <Box sx={{ maxWidth: "800px", margin: "auto", padding: 3 }}>

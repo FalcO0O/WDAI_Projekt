@@ -27,9 +27,9 @@ const db = new sqlite3.Database(dbFile, async (err) => {
   }
   console.log("Połączono z bazą SQLite.");
 
-  const RESET_USERS = false; // <= zmien na false, jeżeli nie chcesz resetować użytkowników
+  const RESET_USERS = true; // <= zmien na false, jeżeli nie chcesz resetować użytkowników
   if (RESET_USERS) {
-    //resetowanie tabeli users
+    // Resetowanie tabeli users
     db.serialize(() => {
       db.run("DELETE FROM users", (err) => {
         if (err) {
@@ -48,21 +48,19 @@ const db = new sqlite3.Database(dbFile, async (err) => {
     });
 
     // Tworzenie tabeli "users"
-    const fs = require("fs");
-
     db.run(
       `
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      firstName TEXT NOT NULL,
-      lastName TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'user',
-      caloriesGoal INTEGER NOT NULL DEFAULT 2000
-    )
-    `,
-      (err) => {
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    caloriesGoal INTEGER NOT NULL DEFAULT 2000
+  )
+  `,
+      async (err) => {
         if (err) {
           console.error("Błąd tworzenia tabeli users:", err);
           return;
@@ -75,7 +73,7 @@ const db = new sqlite3.Database(dbFile, async (err) => {
         );
 
         // Sprawdzenie, czy tabela jest pusta
-        db.get("SELECT COUNT(*) AS count FROM users", (err, row) => {
+        db.get("SELECT COUNT(*) AS count FROM users", async (err, row) => {
           if (err) {
             console.error("Błąd sprawdzania tabeli users:", err);
             return;
@@ -85,48 +83,60 @@ const db = new sqlite3.Database(dbFile, async (err) => {
             console.log("Tabela 'users' jest pusta. Wstawianie danych...");
 
             const insertStmt = db.prepare(`
-            INSERT INTO users (firstName, lastName, email, password, role, caloriesGoal)
-            VALUES (?, ?, ?, ?, ?, ?)
-          `);
+          INSERT INTO users (firstName, lastName, email, password, role, caloriesGoal)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `);
 
-            db.serialize(() => {
-              usersData.forEach((user, index) => {
-                insertStmt.run(
-                  user.firstName,
-                  user.lastName,
-                  user.email,
-                  user.password,
-                  user.role || "user", // Domyślna rola: "user"
-                  user.caloriesGoal || 2000, // Domyślna wartość kaloryczna: 2000
-                  (err) => {
-                    if (err) {
-                      console.error(
-                        `Błąd wstawiania użytkownika ${user.email}:`,
-                        err
-                      );
-                    }
+            try {
+              // Hashowanie haseł dla wszystkich użytkowników
+              const hashedUsersData = await Promise.all(
+                usersData.map(async (user) => ({
+                  ...user,
+                  password: await bcrypt.hash(user.password, 10), // Hashowanie hasła
+                }))
+              );
 
-                    // Jeśli to ostatni użytkownik, pobierz wszystkie rekordy
-                    if (index === usersData.length - 1) {
-                      insertStmt.finalize(() => {
-                        console.log(
-                          "Dane zostały pomyślnie dodane do tabeli 'users'."
+              db.serialize(() => {
+                hashedUsersData.forEach((user, index) => {
+                  insertStmt.run(
+                    user.firstName,
+                    user.lastName,
+                    user.email,
+                    user.password, // Teraz już zahashowane hasło
+                    user.role || "user",
+                    user.caloriesGoal || 2000,
+                    (err) => {
+                      if (err) {
+                        console.error(
+                          `Błąd wstawiania użytkownika ${user.email}:`,
+                          err
                         );
+                      }
 
-                        // Pobierz wszystkie rekordy z tabeli "users" po zakończeniu wstawiania
-                        db.all("SELECT * FROM users", [], (err, rows) => {
-                          if (err) {
-                            console.error("Błąd zapytania:", err.message);
-                          } else {
-                            console.log("Dane z tabeli users:", rows);
-                          }
+                      // Jeśli to ostatni użytkownik, pobierz wszystkie rekordy
+                      if (index === hashedUsersData.length - 1) {
+                        insertStmt.finalize(() => {
+                          console.log(
+                            "Dane zostały pomyślnie dodane do tabeli 'users'."
+                          );
+
+                          // Pobierz wszystkie rekordy z tabeli "users"
+                          db.all("SELECT * FROM users", [], (err, rows) => {
+                            if (err) {
+                              console.error("Błąd zapytania:", err.message);
+                            } else {
+                              console.log("Dane z tabeli users:", rows);
+                            }
+                          });
                         });
-                      });
+                      }
                     }
-                  }
-                );
+                  );
+                });
               });
-            });
+            } catch (hashErr) {
+              console.error("Błąd hashowania haseł:", hashErr);
+            }
           } else {
             console.log(
               "Tabela 'users' już zawiera dane. Pominięto wstawianie."

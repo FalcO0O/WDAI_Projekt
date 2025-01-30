@@ -1,0 +1,32 @@
+[
+  {
+    "description": "Sałatka grecka",
+    "preparation": "Pokrój warzywa, dodaj oliwki i ser feta, polej oliwą.",
+    "grams": 300,
+    "calories": 450,
+    "proteins": 15,
+    "carbohydrates": 20,
+    "fats": 30,
+    "userID": 1
+  },
+  {
+    "description": "Kanapka z awokado",
+    "preparation": "Rozprowadź awokado na chlebie, dodaj sól i pieprz.",
+    "grams": 200,
+    "calories": 300,
+    "proteins": 10,
+    "carbohydrates": 25,
+    "fats": 15,
+    "userID": null
+  },
+  {
+    "description": "Zupa pomidorowa",
+    "preparation": "Ugotuj pomidory z przyprawami, zmiksuj na gładki krem.",
+    "grams": 500,
+    "calories": 250,
+    "proteins": 8,
+    "carbohydrates": 30,
+    "fats": 10,
+    "userID": 2
+  }
+]

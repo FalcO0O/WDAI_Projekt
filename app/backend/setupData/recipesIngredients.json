@@ -1,0 +1,22 @@
+[
+  {
+    "recipeID": 1,
+    "productID": 1,
+    "grams": 100
+  },
+  {
+    "recipeID": 1,
+    "productID": 2,
+    "grams": 50
+  },
+  {
+    "recipeID": 2,
+    "productID": 3,
+    "grams": 150
+  },
+  {
+    "recipeID": 3,
+    "productID": 4,
+    "grams": 200
+  }
+]

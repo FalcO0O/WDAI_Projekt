@@ -1,0 +1,22 @@
+[
+  {
+    "recipeID": 1,
+    "userID": 1,
+    "opinion": "Bardzo smaczna sałatka!"
+  },
+  {
+    "recipeID": 1,
+    "userID": 2,
+    "opinion": "Świetny przepis, polecam."
+  },
+  {
+    "recipeID": 2,
+    "userID": 1,
+    "opinion": "Proste i pyszne."
+  },
+  {
+    "recipeID": 3,
+    "userID": 1,
+    "opinion": "Idealna na zimowe wieczory."
+  }
+]

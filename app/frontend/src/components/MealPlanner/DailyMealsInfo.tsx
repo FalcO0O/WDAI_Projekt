@@ -1,7 +1,6 @@
 // DailyMealsInfo.tsx
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import axios from "axios";
 import MealInfo from "./MealInfo";
 import { PORT } from "../../PORT";
 
@@ -28,8 +27,6 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
   userID,
 }) => {
   const [mealsHistory, setMealsHistory] = useState<MealEntry[]>([]);
-
-  const [caloriesGoal, setCaloriesGoal] = useState("");
 
   // Formatowanie daty do wyświetlenia, np. "środa, 2 lutego 2025"
   const formattedDate = currentDate.toLocaleDateString("pl-PL", {
@@ -103,33 +100,6 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
     fetchAllMealsForDay();
   };
 
-  // Pobieranie celu kalorycznego
-  const loadUserCaloriesGoal = async () => {
-    try {
-      const userID = localStorage.getItem("userID");
-      console.log(userID);
-      if (!userID) return;
-      const token = localStorage.getItem("accessToken");
-      console.log(token);
-      if (!token) return;
-
-      const response = await axios.get("/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
-          userID,
-        },
-      });
-
-      setCaloriesGoal(response.data.profile.caloriesGoal);
-    } catch (error) {
-      console.error("Błąd pobierania profilu:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadUserCaloriesGoal();
-  }, []);
-
   // Definicje składników odżywczych i ich zakresów
   const nutrients: Array<keyof MealEntry> = [
     "calories",
@@ -139,22 +109,10 @@ const DailyMealsInfo: React.FC<DailyMealsInfoProps> = ({
   ];
   const nutrientLabels = ["Kalorie", "Białko", "Węglowodany", "Tłuszcze"];
   const nutrientRanges: Record<string, { min: number; max: number }> = {
-    calories: {
-      min: (1800 / 2000) * Number({ caloriesGoal }),
-      max: (2200 / 2000) * Number({ caloriesGoal }),
-    },
-    proteins: {
-      min: 45 * (Number(caloriesGoal) / 2000),
-      max: 60 * (Number(caloriesGoal) / 2000),
-    },
-    carbs: {
-      min: 225 * (Number(caloriesGoal) / 2000),
-      max: 300 * (Number(caloriesGoal) / 2000),
-    },
-    fats: {
-      min: 60 * (Number(caloriesGoal) / 2000),
-      max: 80 * (Number(caloriesGoal) / 2000),
-    },
+    calories: { min: 1800, max: 2200 },
+    proteins: { min: 45, max: 60 },
+    carbs: { min: 225, max: 300 },
+    fats: { min: 60, max: 80 },
   };
 
   /**

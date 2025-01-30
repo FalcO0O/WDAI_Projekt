@@ -318,7 +318,7 @@ app.post("/logout", (req, res) => {
 app.get("/profile", authenticateToken, (req, res) => {
   // req.user = { userId, iat, exp }
   db.get(
-    "SELECT id, firstName, lastName, email FROM users WHERE id = ?",
+    "SELECT id, firstName, lastName, email, caloriesGoal FROM users WHERE id = ?",
     [req.user.userId],
     (err, user) => {
       if (err) {
@@ -517,6 +517,34 @@ app.get("/api/products", authenticateToken, (req, res) => {
         .json({ message: "Błąd podczas pobierania posiłków" });
     }
     res.json(rows);
+  });
+});
+
+// =========================== Aktualizacja celu kalorycznego ===========================
+app.put("/api/users/calories-goal", authenticateToken, (req, res) => {
+  const { caloriesGoal } = req.body;
+
+  if (!caloriesGoal || isNaN(caloriesGoal)) {
+    return res
+      .status(400)
+      .json({ message: "Niepoprawna wartość celu kalorycznego" });
+  }
+
+  const sql = `
+    UPDATE users 
+    SET caloriesGoal = ? 
+    WHERE id = ?
+  `;
+
+  db.run(sql, [caloriesGoal, req.user.userId], function (err) {
+    if (err) {
+      console.error("Błąd aktualizacji celu kalorycznego:", err);
+      return res
+        .status(500)
+        .json({ message: "Błąd podczas aktualizacji celu" });
+    }
+
+    return res.json({ message: "Cel kaloryczny zapisany pomyślnie" });
   });
 });
 

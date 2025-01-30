@@ -9,6 +9,7 @@ import BMICalculator from "./routes/BMICalculator";
 import CalorieCalculator from "./routes/CalorieCalculator";
 import Register from "./components/Common/Register";
 import RecipesPage from "./routes/RecipesPage";
+import RecipeDetails from "./components/Recipes/RecipeDetails";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/BMI_calculator" element={<BMICalculator />} />
         <Route path="/calorie_calculator" element={<CalorieCalculator />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/recipe/:id" element={<RecipeDetails />} />{" "}
       </Routes>
     </Router>
   );

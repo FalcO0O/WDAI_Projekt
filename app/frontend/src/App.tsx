@@ -10,6 +10,8 @@ import CalorieCalculator from "./routes/CalorieCalculator";
 import Register from "./components/Common/Register";
 import RecipesPage from "./routes/RecipesPage";
 import RecipeDetails from "./components/Recipes/RecipeDetails";
+import {ProtectedAdminRoute} from "./routes/AdminRoute";
+import AdminPanel from "./components/Common/AdminPanel";
 
 function App() {
   return (
@@ -25,6 +27,11 @@ function App() {
         <Route path="/calorie_calculator" element={<CalorieCalculator />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recipe/:id" element={<RecipeDetails />} />{" "}
+        <Route path="/admin" element={
+          <ProtectedAdminRoute>
+            <AdminPanel />
+          </ProtectedAdminRoute>
+        }/>
       </Routes>
     </Router>
   );

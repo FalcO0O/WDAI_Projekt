@@ -69,11 +69,14 @@ const Login = ({ isListItem = false, open, setOpen }: { isListItem?: boolean; op
                 localStorage.removeItem("userID");
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
+                localStorage.removeItem("userRole");
+
 
                 // Zapisujemy dane nowego użytkownika
-                localStorage.setItem("userID", data.userId);  // <-- kluczowa zmiana
+                localStorage.setItem("userID", data.userId);
                 localStorage.setItem("accessToken", data.accessToken);
                 localStorage.setItem("refreshToken", data.refreshToken);
+                localStorage.setItem("userRole", data.role);
 
                 // Pokażemy sukces przez Snackbar
                 setSnackbar({ open: true, message: "Zalogowano pomyślnie!", severity: "success" });

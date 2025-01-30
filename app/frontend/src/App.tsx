@@ -9,6 +9,8 @@ import AdminBrowseRecipies from "./routes/AdminBrowseRecipies";
 import BMICalculator from "./routes/BMICalculator";
 import CalorieCalculator from "./routes/CalorieCalculator";
 import Register from "./components/Common/Register";
+import {ProtectedAdminRoute} from "./routes/AdminRoute";
+import AdminPanel from "./components/Common/AdminPanel";
 
 function App() {
   return (
@@ -24,6 +26,11 @@ function App() {
         <Route path="/BMI_calculator" element={<BMICalculator />} />
         <Route path="/calorie_calculator" element={<CalorieCalculator />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin" element={
+          <ProtectedAdminRoute>
+            <AdminPanel />
+          </ProtectedAdminRoute>
+        }/>
       </Routes>
     </Router>
   );

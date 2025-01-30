@@ -46,7 +46,7 @@ export function HomeBar() {
 
     // Sprawdź, czy użytkownik jest zalogowany (czy jest accessToken w localStorage)
     const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
-
+    const userRole = localStorage.getItem("userRole");
     /**
      * Obsługa "Zaplanuj posiłek"
      */
@@ -70,6 +70,7 @@ export function HomeBar() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("userID");
+        localStorage.removeItem("userRole");
 
         // Pokażmy snackbar z informacją o wylogowaniu
         setLogoutSnackbarOpen(true);
@@ -151,6 +152,17 @@ export function HomeBar() {
                             gap: { xs: 2, md: 3 },
                         }}
                     >
+                        {userRole === 'admin' && (
+                            <Button
+                                sx={{
+                                    ...buttonSx,
+                                    fontWeight: isActive("/admin") ? "bold" : "normal",
+                                }}
+                                onClick={() => navigate("/admin")}
+                            >
+                                Panel admina
+                            </Button>
+                        )}
                         {isLoggedIn ? (
                             // Jeśli zalogowany, pokazujemy przycisk "Wyloguj"
                             <Button sx={buttonSx} onClick={handleLogout}>
@@ -213,6 +225,19 @@ export function HomeBar() {
                             Zaplanuj posiłek
                         </ListItemButton>
                     </ListItem>
+
+                    {userRole === 'admin' && (
+                        <ListItem disablePadding>
+                            <ListItemButton
+                                onClick={() => {
+                                    navigate("/admin");
+                                    setMenuOpen(false);
+                                }}
+                            >
+                                Panel admina
+                            </ListItemButton>
+                        </ListItem>
+                    )}
 
                     {/* W zależności czy zalogowany */}
                     {isLoggedIn ? (

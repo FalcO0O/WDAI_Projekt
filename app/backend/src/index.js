@@ -20,16 +20,15 @@ if (!fs.existsSync(dbFile)) {
   );
 }
 
-const db = new sqlite3.Database(dbFile, (err) => {
+const db = new sqlite3.Database(dbFile, async (err) => {
   if (err) {
     console.error("Błąd połączenia z bazą SQLite:", err);
     process.exit(1);
   }
   console.log("Połączono z bazą SQLite.");
-
   // Tabela "users" (bez admina)
   db.run(
-    `
+      `
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       firstName TEXT NOT NULL,
@@ -39,18 +38,46 @@ const db = new sqlite3.Database(dbFile, (err) => {
       role TEXT NOT NULL DEFAULT 'user'
     )
   `,
-    (err) => {
-      if (err) {
-        console.error("Błąd tworzenia tabeli users:", err);
-      } else {
-        console.log('Tabela "users" gotowa (lub już istniała).');
+      (err) => {
+        if (err) {
+          console.error("Błąd tworzenia tabeli users:", err);
+        } else {
+          console.log('Tabela "users" gotowa (lub już istniała).');
+        }
       }
-    }
   );
+
+  // Pobierz wszystkie rekordy z tabeli "users"
+  db.all("SELECT * FROM users", [], (err, rows) => {
+    if (err) {
+      console.error("Błąd zapytania:", err.message);
+    } else {
+      console.log("Dane z tabeli users:", rows);
+    }
+
+  });
+
+  // try {
+  //   // Dodajemy Admina
+  //   const hashedPassword = await bcrypt.hash('qwerty123', 10); // password
+  //   db.run(
+  //       `
+  //       DELETE FROM users WHERE email = 'qwerty@123.pl';
+  //     `
+  //   );
+  //   db.run(
+  //       `
+  //       INSERT INTO users (firstName, lastName, email, password, role)
+  //       VALUES (?, ?, ?, ?, 'admin')
+  //     `, ["abc", "abc", "qwerty@123.pl", hashedPassword]
+  //   );
+  // } catch (hashErr) {
+  //   console.error(hashErr);
+  // }
 
   // Tabela "mealsHistory"
   db.run(
-    `
+      `
     CREATE TABLE IF NOT EXISTS mealsHistory (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       userID INTEGER NOT NULL,
@@ -64,18 +91,18 @@ const db = new sqlite3.Database(dbFile, (err) => {
       fats REAL DEFAULT 0
     )
   `,
-    (err) => {
-      if (err) {
-        console.error("Błąd tworzenia tabeli mealsHistory:", err);
-      } else {
-        console.log('Tabela "mealsHistory" gotowa (lub już istniała).');
+      (err) => {
+        if (err) {
+          console.error("Błąd tworzenia tabeli mealsHistory:", err);
+        } else {
+          console.log('Tabela "mealsHistory" gotowa (lub już istniała).');
+        }
       }
-    }
   );
 
   // utworzenie tabeli produktów
   db.run(
-    `
+      `
     CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
@@ -86,68 +113,68 @@ const db = new sqlite3.Database(dbFile, (err) => {
             average_weight_per_item_g REAL NULL
     )
     `,
-    (err) => {
-      if (err) {
-        console.error("Błąd tworzenia tabeli products:", err);
-      } else {
-        console.log(
-          'Tabela "products" została zainicjowana (lub już istniała).'
-        );
+      (err) => {
+        if (err) {
+          console.error("Błąd tworzenia tabeli products:", err);
+        } else {
+          console.log(
+              'Tabela "products" została zainicjowana (lub już istniała).'
+          );
 
-        // Wczytanie danych z pliku JSON
-        const productsData = JSON.parse(
-          fs.readFileSync("./setupData/products.json", "utf-8")
-        );
+          // Wczytanie danych z pliku JSON
+          const productsData = JSON.parse(
+              fs.readFileSync("./setupData/products.json", "utf-8")
+          );
 
-        // Sprawdzenie, czy tabela products jest pusta
-        db.get("SELECT COUNT(*) AS count FROM products", (err, row) => {
-          if (err) {
-            console.error("Błąd sprawdzania tabeli products:", err);
-            return;
-          }
+          // Sprawdzenie, czy tabela products jest pusta
+          db.get("SELECT COUNT(*) AS count FROM products", (err, row) => {
+            if (err) {
+              console.error("Błąd sprawdzania tabeli products:", err);
+              return;
+            }
 
-          if (row.count === 0) {
-            console.log("Tabela 'products' jest pusta. Wstawianie danych...");
+            if (row.count === 0) {
+              console.log("Tabela 'products' jest pusta. Wstawianie danych...");
 
-            const insertStmt = db.prepare(`
+              const insertStmt = db.prepare(`
                 INSERT INTO products (name, calories_per_100g, protein_per_100g, fat_per_100g, carbs_per_100g, average_weight_per_item_g)
                 VALUES (?, ?, ?, ?, ?, ?)
             `);
 
-            db.serialize(() => {
-              productsData.forEach((product, index) => {
-                insertStmt.run(
-                  product.name,
-                  product.calories_per_100g,
-                  product.protein_per_100g,
-                  product.fat_per_100g,
-                  product.carbs_per_100g,
-                  product.average_weight_per_item_g || null,
-                  (err) => {
-                    if (err) {
-                      console.error(
-                        `Błąd wstawiania produktu ${product.name}:`,
-                        err
-                      );
-                    } else if (index === productsData.length - 1) {
-                      console.log(
-                        "Dane zostały pomyślnie dodane do tabeli 'products'."
-                      );
-                    }
-                  }
-                );
-              });
+              db.serialize(() => {
+                productsData.forEach((product, index) => {
+                  insertStmt.run(
+                      product.name,
+                      product.calories_per_100g,
+                      product.protein_per_100g,
+                      product.fat_per_100g,
+                      product.carbs_per_100g,
+                      product.average_weight_per_item_g || null,
+                      (err) => {
+                        if (err) {
+                          console.error(
+                              `Błąd wstawiania produktu ${product.name}:`,
+                              err
+                          );
+                        } else if (index === productsData.length - 1) {
+                          console.log(
+                              "Dane zostały pomyślnie dodane do tabeli 'products'."
+                          );
+                        }
+                      }
+                  );
+                });
 
-              insertStmt.finalize();
-            });
-          } else {
-            console.log(
-              "Tabela 'products' już zawiera dane. Pominięto wstawianie."
-            );
-          }
-        });
+                insertStmt.finalize();
+              });
+            } else {
+              console.log(
+                  "Tabela 'products' już zawiera dane. Pominięto wstawianie."
+              );
+            }
+          });
+        }
       }
-    }
   );
 });
 
@@ -155,24 +182,13 @@ const db = new sqlite3.Database(dbFile, (err) => {
 let refreshTokens = [];
 
 // ================== FUNKCJE POMOCNICZE (JWT) ===================
-function generateAccessToken(userId) {
-  if (!process.env.ACCESS_TOKEN_SECRET) {
-    throw new Error("Brak ACCESS_TOKEN_SECRET w pliku .env");
-  }
-  // Rola na sztywno user – usuwamy z payload
-  return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
-  });
-}
+const generateAccessToken = (userId, role) => {
+  return jwt.sign({ userId, role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+};
 
-function generateRefreshToken(userId) {
-  if (!process.env.REFRESH_TOKEN_SECRET) {
-    throw new Error("Brak REFRESH_TOKEN_SECRET w pliku .env");
-  }
-  return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: "7d",
-  });
-}
+const generateRefreshToken = (userId, role) => {
+  return jwt.sign({ userId, role }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+};
 
 // Middleware: sprawdzanie poprawności tokenu
 function authenticateToken(req, res, next) {
@@ -273,12 +289,13 @@ app.post("/login", (req, res) => {
 
       refreshTokens.push(refreshToken);
 
-      // Zwracamy także userId
+      // Zwracamy także rolę
       return res.json({
         message: "Zalogowano pomyślnie",
         userId: user.id,
         accessToken,
         refreshToken,
+        role: user.role // Dodaj pole z rolą
       });
     } catch (compareErr) {
       console.error(compareErr);
@@ -331,6 +348,26 @@ app.get("/profile", authenticateToken, (req, res) => {
     }
   );
 });
+
+
+// Dodaj nowy middleware do sprawdzania roli
+const verifyAdmin = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    if (user.role !== 'admin') return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// Użyj middleware dla endpointów admina
+app.get('/admin/data', verifyAdmin, (req, res) => {
+  // Logika specyficzna dla admina
+});
+
 
 // ======================== ENDPOINTY POSIŁKÓW ========================
 
@@ -517,6 +554,45 @@ app.get("/api/products", authenticateToken, (req, res) => {
     }
     res.json(rows);
   });
+});
+
+
+// ======================= ADMIN PAGE ==================================
+
+
+// PUT - Aktualizacja opinii
+app.put('/recipe/opinions/:id_opinii', authenticateToken, (req, res) => {
+  const { id_opinii } = req.params;
+  const { opinion } = req.body;
+
+  db.run(
+      'UPDATE recipesOpinions SET opinion = ? WHERE id = ?',
+      [opinion, id_opinii],
+      function(err) {
+        if (err) {
+          console.error('Błąd aktualizacji opinii:', err);
+          return res.status(500).json({ message: 'Błąd aktualizacji opinii' });
+        }
+        res.json({ message: 'Opinia zaktualizowana pomyślnie' });
+      }
+  );
+});
+
+// DELETE - Usuwanie opinii
+app.delete('/recipe/opinions/:id_opinii', authenticateToken, (req, res) => {
+  const { id_opinii } = req.params;
+
+  db.run(
+      'DELETE FROM recipesOpinions WHERE id = ?',
+      [id_opinii],
+      function(err) {
+        if (err) {
+          console.error('Błąd usuwania opinii:', err);
+          return res.status(500).json({ message: 'Błąd usuwania opinii' });
+        }
+        res.json({ message: 'Opinia usunięta pomyślnie' });
+      }
+  );
 });
 
 // ====================== START SERWERA ======================

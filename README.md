@@ -39,8 +39,8 @@ WDAI_Projekt to aplikacja internetowa stworzona w ramach zajęć z Wstępu do Ap
 
    Aplikacja będzie dostępna pod adresem `http://localhost:3000`.
 
-   Nie mylic z `npm install` i `npm start`.
-   W naszym podejsciu instalujemy wszystkie zależności za pomoca skryptów i jednocześnie uruchamiamy backend i frontend.
+   Nie mylić z `npm install` i `npm start`.
+   W naszym podejściu instalujemy wszystkie zależności za pomoca skryptów i jednocześnie uruchamiamy backend i frontend.
 
 ## Użycie
 

@@ -2,12 +2,11 @@
 
 ## Opis projektu
 
-WDAI_Projekt to aplikacja internetowa stworzona w ramach zajęć z WDAI. Aplikacja umożliwia użytkownikom zarządzanie posiłkami, w tym dodawanie opinii oraz przeglądanie historii spożywanych posiłków.
+WDAI_Projekt to aplikacja internetowa stworzona w ramach zajęć z Wstępu do Aplikacji Internetowych. Aplikacja umożliwia użytkownikom zarządzanie posiłkami, w tym przeglądanie historii spożywanych posiłków, liczenie zapotrzebowania kalorycznego oraz BMI, przeglądanie przepisów.
 
 ## Funkcje
 
 - **Rejestracja i logowanie użytkowników**: Użytkownicy mogą tworzyć konta oraz logować się do aplikacji.
-- **Dodawanie opinii**: Możliwość dodawania opinii na temat posiłków.
 - **Historia posiłków**: Przeglądanie historii spożywanych posiłków z podziałem na dni.
 - **Panel administracyjny**: Dostęp dla administratorów do zarządzania użytkownikami i treściami. TODO
 
@@ -29,20 +28,19 @@ WDAI_Projekt to aplikacja internetowa stworzona w ramach zajęć z WDAI. Aplikac
 2. **Instalacja zależności**
 
    ```bash
-   npm install
+   npm run install-all
    ```
 
-3. **Konfiguracja bazy danych**
-
-   Upewnij się, że SQLite jest zainstalowane i uruchomione na Twoim systemie. Skonfiguruj połączenie z bazą danych w pliku konfiguracyjnym aplikacji.
-
-4. **Uruchomienie aplikacji**
+3. **Uruchomienie aplikacji**
 
    ```bash
-   npm start
+   npm run start-all
    ```
 
    Aplikacja będzie dostępna pod adresem `http://localhost:3000`.
+
+   Nie mylic z `npm install` i `npm start`.
+   W naszym podejsciu instalujemy wszystkie zależności za pomoca skryptów i jednocześnie uruchamiamy backend i frontend.
 
 ## Użycie
 

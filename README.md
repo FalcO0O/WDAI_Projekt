@@ -1,4 +1,4 @@
-# WDAI_Projekt
+# Count Your Calories
 
 ## Opis projektu
 

@@ -1,57 +1,60 @@
-# WDAI_Projekt
+# WDAI_Projekt  
 
-## Opis projektu
+## Project Description  
 
-WDAI_Projekt to aplikacja internetowa stworzona w ramach zajęć z Wstępu do Aplikacji Internetowych. Aplikacja umożliwia użytkownikom zarządzanie posiłkami, w tym przeglądanie historii spożywanych posiłków, liczenie zapotrzebowania kalorycznego oraz BMI, przeglądanie przepisów.
+**WDAI_Projekt** is a web application developed as part of the *Introduction to Web Applications* course. The application allows users to manage their meals, including viewing meal history, calculating calorie needs and BMI, and browsing recipes.  
 
-## Funkcje
+## Features  
 
-- **Rejestracja i logowanie użytkowników**: Użytkownicy mogą tworzyć konta oraz logować się do aplikacji.
-- **Historia posiłków**: Przeglądanie historii spożywanych posiłków z podziałem na dni.
-- **Panel administracyjny**: Dostęp dla administratorów do zarządzania użytkownikami i treściami. TODO
+- **User Registration and Login**: Users can create accounts and log into the application.  
+- **Meal History**: View a history of consumed meals categorized by days.  
+- **Admin Panel**: Provides administrators with access to user and content management. (TODO)  
 
-## Wymagania systemowe
+## System Requirements  
 
-- Node.js w wersji 14.x lub nowszej
-- npm w wersji 6.x lub nowszej
-- SQLite jako baza danych
+- Node.js version 14.x or later  
+- npm version 6.x or later  
+- SQLite as the database  
 
-## Instalacja
+## Installation  
 
-1. **Klonowanie repozytorium**
+1. **Clone the repository**  
 
    ```bash
    git clone https://github.com/FalcO0O/WDAI_Projekt.git
    cd WDAI_Projekt
    ```
 
-2. **Instalacja zależności**
+2. **Install dependencies**  
 
    ```bash
    npm run install-all
    ```
 
-3. **Uruchomienie aplikacji**
+3. **Run the application**  
 
    ```bash
    npm run start-all
    ```
 
-   Aplikacja będzie dostępna pod adresem `http://localhost:3000`.
+   The application will be available at `http://localhost:3000`.  
 
-   Nie mylić z `npm install` i `npm start`.
-   W naszym podejściu instalujemy wszystkie zależności za pomoca skryptów i jednocześnie uruchamiamy backend i frontend.
+   Do not confuse this with `npm install` and `npm start`.  
+   In our approach, we install all dependencies using scripts and start both the backend and frontend simultaneously.  
 
-## Użycie
+## Usage  
 
-Po uruchomieniu aplikacji:
+After launching the application:  
 
-- **Rejestracja**: Utwórz nowe konto, podając wymagane dane.
-- **Logowanie**: Zaloguj się, używając wcześniej utworzonych danych.
-- **Historia posiłków**: Sprawdź historię spożywanych posiłków w odpowiedniej sekcji.
-- **Panel administracyjny**: Jeśli jesteś administratorem, uzyskasz dostęp do panelu administracyjnego, gdzie możesz zarządzać użytkownikami i treściami.
+- **Registration**: Create a new account by providing the required details.  
+- **Login**: Sign in using your previously created credentials.  
+- **Meal History**: Check your meal consumption history in the designated section.  
+- **Admin Panel**: If you are an administrator, you will gain access to the admin panel, where you can manage users and content.  
 
+## License  
 
-## Licencja
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.  
 
-Ten projekt jest licencjonowany na podstawie licencji MIT. Szczegóły znajdują się w pliku [LICENSE](./LICENSE).
+---
+
+Let me know if you need any modifications! 🚀

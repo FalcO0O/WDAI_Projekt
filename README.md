@@ -1,4 +1,4 @@
-# WDAI_Projekt
+# Count Your Calories
 
 ## Współautorzy:
 - Tomasz Mol - [tomaszmol](https://github.com/USERNAME)
